@@ -2,9 +2,13 @@ package org.real7.luckywiki.domain.wiki.service
 
 import org.real7.luckywiki.domain.wiki.dto.CreateWikiPageRequest
 import org.real7.luckywiki.domain.wiki.dto.CreateWikiPageResponse
+import org.real7.luckywiki.domain.wiki.dto.WikiPageResponse
 import org.real7.luckywiki.domain.wiki.model.WikiPage
 import org.real7.luckywiki.domain.wiki.model.createWikiPageResponse
+import org.real7.luckywiki.domain.wiki.model.toResponse
 import org.real7.luckywiki.domain.wiki.repository.WikiPageRepository
+import org.real7.luckywiki.exception.ModelNotFoundException
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
@@ -32,5 +36,10 @@ class WikiPageService(
         }
 
         return wikiPage.createWikiPageResponse()
+    }
+
+    fun getWikiPage(wikiId: Long): WikiPageResponse {
+        val wikiPage = wikiPageRepository.findByIdOrNull(wikiId) ?: throw ModelNotFoundException("WikiPage", wikiId)
+        return wikiPage.toResponse()
     }
 }

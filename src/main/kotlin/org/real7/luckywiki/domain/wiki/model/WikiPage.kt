@@ -4,6 +4,7 @@ import jakarta.persistence.*
 import org.real7.luckywiki.domain.wiki.BaseTimeEntity
 import org.real7.luckywiki.domain.wiki.dto.CreateWikiPageRequest
 import org.real7.luckywiki.domain.wiki.dto.CreateWikiPageResponse
+import org.real7.luckywiki.domain.wiki.dto.WikiPageResponse
 
 
 @Entity
@@ -61,4 +62,8 @@ class WikiPage private constructor(
 
 fun WikiPage.createWikiPageResponse(): CreateWikiPageResponse {
     return CreateWikiPageResponse(title, content, image, tag, createdAt)
+}
+
+fun WikiPage.toResponse(): WikiPageResponse {
+    return WikiPageResponse(title, content, image, tag, reaction, views, createdAt, updatedAt)
 }

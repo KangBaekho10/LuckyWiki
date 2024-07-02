@@ -2,12 +2,10 @@ package org.real7.luckywiki.domain.wiki.controller
 
 import org.real7.luckywiki.domain.wiki.dto.CreateWikiPageRequest
 import org.real7.luckywiki.domain.wiki.dto.CreateWikiPageResponse
+import org.real7.luckywiki.domain.wiki.dto.WikiPageResponse
 import org.real7.luckywiki.domain.wiki.service.WikiPageService
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestPart
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 
 @RestController
@@ -15,7 +13,7 @@ import org.springframework.web.multipart.MultipartFile
 class WikisController(
     private val wikiPageService: WikiPageService
 ) {
-    // TODO: 게시물 생성 /api/v1/wikis - 사용자, 관리자만 가능
+    // TODO: 사용자, 관리자만 가능으로 Token 구현 후 권한 체크 필요
     @PostMapping
     fun createWiki(
         // TODO: userId는 Token의 값을 가져와야 함
@@ -26,7 +24,11 @@ class WikisController(
         return ResponseEntity.ok(wikiPageService.createWikiPage(memberId, request, image))
     }
 
-    // TODO: 게시물 단 건 조회 /api/v1/wikis/{wikiId}
+    @GetMapping("/{wikiId}")
+    fun getWikiPage(@PathVariable wikiId: Long): ResponseEntity<WikiPageResponse> {
+        return ResponseEntity.ok(wikiPageService.getWikiPage(wikiId))
+    }
+
     // TODO: 게시물 수정 /api/v1/wikis/{wikiId} - 사용자, 관리자만 가능
     // TODO: 게시물 삭제 /api/v1/wikis/{wikiId}
     // TODO: 태그 수정 /api/v1/wikis/{wikiId}
