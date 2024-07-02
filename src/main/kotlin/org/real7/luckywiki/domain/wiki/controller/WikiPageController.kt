@@ -10,7 +10,7 @@ import org.springframework.web.multipart.MultipartFile
 
 @RestController
 @RequestMapping("/api/v1/wikis")
-class WikisController(
+class WikiPageController(
     private val wikiPageService: WikiPageService
 ) {
     // TODO: 사용자, 관리자만 가능으로 Token 구현 후 권한 체크 필요
