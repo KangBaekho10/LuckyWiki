@@ -4,6 +4,7 @@ import org.real7.luckywiki.domain.wiki.dto.CreateWikiPageRequest
 import org.real7.luckywiki.domain.wiki.dto.CreateWikiPageResponse
 import org.real7.luckywiki.domain.wiki.dto.WikiPageResponse
 import org.real7.luckywiki.domain.wiki.service.WikiPageService
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
@@ -21,7 +22,7 @@ class WikiPageController(
         @RequestPart image: MultipartFile?
     ): ResponseEntity<CreateWikiPageResponse> {
         val memberId = 1L
-        return ResponseEntity.ok(wikiPageService.createWikiPage(memberId, request, image))
+        return ResponseEntity.status(HttpStatus.CREATED).body(wikiPageService.createWikiPage(memberId, request, image))
     }
 
     @GetMapping("/{wikiId}")
