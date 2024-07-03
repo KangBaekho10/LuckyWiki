@@ -44,7 +44,7 @@ class CommentControllerTest @Autowired constructor(
 
 
     describe("POST /api/v1/comments/{debateId}") {
-        context("게시글 작성 요청을 하면") {
+        context("댓글 작성 요청을 하면") {
             val memberId = 1L
             val debateId = 1L
             val request = MockMultipartFile(
