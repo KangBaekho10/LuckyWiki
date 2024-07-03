@@ -4,6 +4,7 @@ plugins {
     kotlin("jvm") version "1.9.24"
     kotlin("plugin.spring") version "1.9.24"
     kotlin("plugin.noarg") version "1.9.23"
+    kotlin("kapt") version "1.9.23"
 }
 
 group = "org.real7"
@@ -39,6 +40,7 @@ allOpen {
 
 val kotestVersion = "5.5.5"
 val mockkVersion = "1.13.8"
+val queryDslVersion = "5.0.0"
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
@@ -53,7 +55,8 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 
     // MySQL
-    runtimeOnly("com.mysql:mysql-connector-j")
+    implementation("com.mysql:mysql-connector-j:8.3.0")
+    runtimeOnly("mysql:mysql-connector-java")
 
     // AWS S3
     implementation("io.awspring.cloud:spring-cloud-aws-starter-s3:3.1.1")
@@ -64,6 +67,13 @@ dependencies {
     testImplementation("io.kotest.extensions:kotest-extensions-spring:1.1.3")
     testImplementation("io.mockk:mockk:$mockkVersion")
     testImplementation("com.ninja-squad:springmockk:3.1.1")
+
+    // QueryDSL
+    kapt("com.querydsl:querydsl-apt:$queryDslVersion:jakarta")
+    implementation("com.querydsl:querydsl-jpa:$queryDslVersion:jakarta")
+
+    // Validation
+    implementation("org.springframework.boot:spring-boot-starter-validation")
 }
 
 kotlin {
