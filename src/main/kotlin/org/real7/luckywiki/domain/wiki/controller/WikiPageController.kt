@@ -2,6 +2,7 @@ package org.real7.luckywiki.domain.wiki.controller
 
 import org.real7.luckywiki.domain.wiki.dto.CreateWikiPageRequest
 import org.real7.luckywiki.domain.wiki.dto.CreateWikiPageResponse
+import org.real7.luckywiki.domain.wiki.dto.UpdateWikiPageRequest
 import org.real7.luckywiki.domain.wiki.dto.WikiPageResponse
 import org.real7.luckywiki.domain.wiki.service.WikiPageService
 import org.springframework.http.HttpStatus
@@ -30,7 +31,15 @@ class WikiPageController(
         return ResponseEntity.ok(wikiPageService.getWikiPage(wikiId))
     }
 
-    // TODO: 게시물 수정 /api/v1/wikis/{wikiId} - 사용자, 관리자만 가능
+    // TODO: 사용자, 관리자만 가능으로 Token 구현 후 권한 체크 필요
+    @PutMapping("/{wikiId}")
+    fun updateWikiPage(
+        @PathVariable wikiId: Long,
+        @RequestPart request: UpdateWikiPageRequest,
+        @RequestPart image: MultipartFile?
+    ): ResponseEntity<WikiPageResponse> {
+        return ResponseEntity.ok(wikiPageService.updateWikiPage(wikiId, request, image))
+    }
     // TODO: 게시물 삭제 /api/v1/wikis/{wikiId}
     // TODO: 태그 수정 /api/v1/wikis/{wikiId}
     // TODO: 게시물 생성 및 수정 히스토리 /api/v1/wikis/{wikiId}/history
