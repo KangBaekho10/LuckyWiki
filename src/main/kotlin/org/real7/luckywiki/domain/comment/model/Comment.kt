@@ -3,10 +3,9 @@ package org.real7.luckywiki.domain.comment.model
 import jakarta.persistence.*
 import org.real7.luckywiki.domain.comment.dto.CommentRequest
 import org.real7.luckywiki.domain.comment.dto.CommentResponse
+import org.real7.luckywiki.domain.comment.dto.SimpleCommentResponse
 import org.real7.luckywiki.domain.wiki.BaseTimeEntity
-import org.real7.luckywiki.domain.wiki.dto.CreateWikiPageRequest
-import org.real7.luckywiki.domain.wiki.dto.WikiPageResponse
-import org.real7.luckywiki.domain.wiki.model.WikiPage
+import java.time.LocalDateTime
 
 @Entity
 @Table(name = "comment")
@@ -48,8 +47,17 @@ class Comment private constructor(
             )
         }
     }
+
+    fun updateComment(request: CommentRequest){
+        this.content = request.content
+        this.vote = request.vote
+        this.updatedAt = LocalDateTime.now()
+    }
 }
 
+fun Comment.toSimpleResponse() : SimpleCommentResponse{
+    return SimpleCommentResponse(id!!, content)
+}
 
 fun Comment.toResponse(): CommentResponse {
     return CommentResponse(content, vote, createdAt, updatedAt)
