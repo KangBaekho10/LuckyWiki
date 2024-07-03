@@ -67,6 +67,10 @@ class WikiPage private constructor(
         val wikiHistory = WikiHistory.from(request)
         wikiHistoryList.add(wikiHistory)
     }
+
+    fun deleteAllWikiHistory() {
+        wikiHistoryList.clear()
+    }
 }
 
 fun WikiPage.createWikiPageResponse(): CreateWikiPageResponse {
