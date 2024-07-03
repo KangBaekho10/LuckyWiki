@@ -13,6 +13,10 @@ class Comment private constructor(
     content : String,
     vote : Boolean,
 
+    memberId:Long,
+    debateId:Long
+
+
 //    @ManyToOne(fetch = FetchType.LAZY)
 //    @JoinColumn(name = "member_id")
 //    val member: Member,
@@ -32,6 +36,11 @@ class Comment private constructor(
     var vote: Boolean = vote
     protected set
 
+    var memberId:Long = memberId
+        protected set
+
+    var debateId:Long = debateId
+        protected set
 
     companion object {
         fun from(
@@ -42,6 +51,8 @@ class Comment private constructor(
             return Comment(
                 content = request.content,
                 vote = request.vote,
+                memberId = 1,
+                debateId = 1
 //                member = member,
 //                debate = debate
             )
