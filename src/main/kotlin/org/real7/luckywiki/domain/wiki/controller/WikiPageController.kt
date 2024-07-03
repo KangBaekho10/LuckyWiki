@@ -1,9 +1,7 @@
 package org.real7.luckywiki.domain.wiki.controller
 
-import org.real7.luckywiki.domain.wiki.dto.CreateWikiPageRequest
-import org.real7.luckywiki.domain.wiki.dto.CreateWikiPageResponse
-import org.real7.luckywiki.domain.wiki.dto.UpdateWikiPageRequest
-import org.real7.luckywiki.domain.wiki.dto.WikiPageResponse
+import jakarta.validation.Valid
+import org.real7.luckywiki.domain.wiki.dto.*
 import org.real7.luckywiki.domain.wiki.service.WikiPageService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -19,7 +17,7 @@ class WikiPageController(
     @PostMapping
     fun createWiki(
         // TODO: userId는 Token의 값을 가져와야 함
-        @RequestPart request: CreateWikiPageRequest,
+        @RequestPart @Valid request: CreateWikiPageRequest,
         @RequestPart image: MultipartFile?
     ): ResponseEntity<CreateWikiPageResponse> {
         val memberId = 1L
@@ -35,7 +33,7 @@ class WikiPageController(
     @PutMapping("/{wikiId}")
     fun updateWikiPage(
         @PathVariable wikiId: Long,
-        @RequestPart request: UpdateWikiPageRequest,
+        @RequestPart  @Valid request: UpdateWikiPageRequest,
         @RequestPart image: MultipartFile?
     ): ResponseEntity<WikiPageResponse> {
         return ResponseEntity.ok(wikiPageService.updateWikiPage(wikiId, request, image))
