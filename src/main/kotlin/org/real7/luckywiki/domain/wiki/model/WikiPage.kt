@@ -2,9 +2,7 @@ package org.real7.luckywiki.domain.wiki.model
 
 import jakarta.persistence.*
 import org.real7.luckywiki.domain.wiki.BaseTimeEntity
-import org.real7.luckywiki.domain.wiki.dto.CreateWikiPageRequest
-import org.real7.luckywiki.domain.wiki.dto.CreateWikiPageResponse
-import org.real7.luckywiki.domain.wiki.dto.WikiPageResponse
+import org.real7.luckywiki.domain.wiki.dto.*
 
 
 @Entity
@@ -38,6 +36,9 @@ class WikiPage private constructor(
     val memberId: Long = memberId // TODO: Member Entity 구현 후 제거
     // createdAt, updatedAt은 BaseEntity 사용
 
+    @OneToMany(mappedBy = "wikiPage", fetch = FetchType.LAZY, cascade = [CascadeType.ALL], orphanRemoval = true)
+    val wikiHistoryList: MutableList<WikiHistory> = mutableListOf()
+
     companion object {
         fun from(
             request: CreateWikiPageRequest,
@@ -53,11 +54,23 @@ class WikiPage private constructor(
         }
     }
 
-    fun imageUpload(imageLink: String) {
+    fun uploadImage(imageLink: String) {
         this.image = imageLink
     }
 
-    // TODO: 수정 메서드
+    fun update(title: String?, content: String?) {
+        title?.let { this.title = it }
+        content?.let { this.content = it }
+    }
+
+    fun createWikiHistory(request: CreateWikiHistoryRequest) {
+        val wikiHistory = WikiHistory.from(request)
+        wikiHistoryList.add(wikiHistory)
+    }
+
+    fun deleteAllWikiHistory() {
+        wikiHistoryList.clear()
+    }
 }
 
 fun WikiPage.createWikiPageResponse(): CreateWikiPageResponse {
