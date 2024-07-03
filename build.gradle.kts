@@ -73,6 +73,7 @@ dependencies {
     // AWS S3
     implementation("io.awspring.cloud:spring-cloud-aws-starter-s3:3.1.1")
 
+    runtimeOnly("mysql:mysql-connector-java")
     // TEST
     testImplementation("io.kotest:kotest-runner-junit5:$kotestVersion")
     testImplementation("io.kotest:kotest-assertions-core:$kotestVersion")
