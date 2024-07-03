@@ -149,6 +149,9 @@ class WikiPageService(
         wikiPageRepository.deleteById(wikiId)
 
         imageList.forEach { s3Service.delete(it) }
+    }
 
+    fun getWikiHistory(wikiId: Long): List<WikiHistoryResponse> {
+        return wikiHistoryCustomRepository.findHistoryById(wikiId).map { it.toResponse() }
     }
 }

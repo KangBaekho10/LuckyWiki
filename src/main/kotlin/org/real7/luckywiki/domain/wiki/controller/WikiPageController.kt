@@ -33,14 +33,25 @@ class WikiPageController(
     @PutMapping("/{wikiId}")
     fun updateWikiPage(
         @PathVariable wikiId: Long,
-        @RequestPart  @Valid request: UpdateWikiPageRequest,
+        @RequestPart @Valid request: UpdateWikiPageRequest,
         @RequestPart image: MultipartFile?
     ): ResponseEntity<WikiPageResponse> {
         return ResponseEntity.ok(wikiPageService.updateWikiPage(wikiId, request, image))
     }
-    // TODO: 게시물 삭제 /api/v1/wikis/{wikiId}
+
+    // TODO: 관리자만 가능으로 Token 구현 후 권한 체크 필요
+    @DeleteMapping("/{wikiId}")
+    fun deleteWikiPage(@PathVariable wikiId: Long): ResponseEntity<Unit> {
+        wikiPageService.deleteWikiPage(wikiId)
+        return ResponseEntity.noContent().build()
+    }
+
+    @GetMapping("/{wikiId}/history")
+    fun getWikiHistory(@PathVariable wikiId: Long): ResponseEntity<List<WikiHistoryResponse>> {
+        return ResponseEntity.ok(wikiPageService.getWikiHistory(wikiId))
+    }
+
     // TODO: 태그 수정 /api/v1/wikis/{wikiId}
-    // TODO: 게시물 생성 및 수정 히스토리 /api/v1/wikis/{wikiId}/history
     // ---------------------------------------------------------------
     // TODO: /api/v2/popular-word-top10
     // TODO: 일간 게시물 조회 /api/v2/daily-wiki
