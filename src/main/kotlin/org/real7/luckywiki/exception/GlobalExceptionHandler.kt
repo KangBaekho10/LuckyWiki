@@ -24,4 +24,18 @@ class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
             .body(ErrorResponse("${bindingResult.fieldError?.field}은(는) ${bindingResult.fieldError?.defaultMessage}"))
     }
+
+    @ExceptionHandler(IllegalStateException::class)
+    fun handleAlreadyAppliedException(e: IllegalStateException): ResponseEntity<ErrorResponse> {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(ErrorResponse(e.message))
+    }
+
+    @ExceptionHandler(IllegalArgumentException::class)
+    fun handleIllegalArgumentException(e: IllegalArgumentException): ResponseEntity<ErrorResponse> {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+            ErrorResponse(
+                e.message
+            )
+        )
+    }
 }

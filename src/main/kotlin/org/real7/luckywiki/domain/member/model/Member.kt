@@ -20,7 +20,7 @@ class Member(
 
 fun Member.toResponse(): MemberResponse {
     return MemberResponse(
-        id = id!!,
+        id = id?: throw IllegalStateException("UserId should not be null"),
         email = email,
         name = name,
         role = role

@@ -1,6 +1,5 @@
 package org.real7.luckywiki.domain.member.service
 
-import org.real7.luckywiki.domain.exception.ModelNotFoundException
 import org.real7.luckywiki.domain.member.dto.CreateMemberRequest
 import org.real7.luckywiki.domain.member.dto.LoginMemberRequest
 import org.real7.luckywiki.domain.member.dto.LoginMemberResponse
@@ -9,6 +8,7 @@ import org.real7.luckywiki.domain.member.model.Member
 import org.real7.luckywiki.domain.member.model.Role
 import org.real7.luckywiki.domain.member.model.toResponse
 import org.real7.luckywiki.domain.member.repository.MemberRepository
+import org.real7.luckywiki.exception.ModelNotFoundException
 import org.real7.luckywiki.security.jwt.JwtPlugin
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.core.context.SecurityContextHolder
@@ -46,19 +46,23 @@ class MemberService(
     }
 
     fun login(request: LoginMemberRequest): LoginMemberResponse {
-        val user = memberRepository.findByEmail(request.email) ?: throw ModelNotFoundException("User", null)
+        val member = memberRepository.findByEmail(request.email)
 
-        if (request.email != user.email || !passwordEncoder.matches(request.password, user.password)) {
-            throw IllegalStateException("이메일 또는 비밀번호를 확인해주세요")
-        }
 
-        return LoginMemberResponse(
-            accessToken = jwtPlugin.generateAccessToken(
-                subject = user.id.toString(),
-                email = user.email,
+            if (request.email != member!!.email || !passwordEncoder.matches(request.password, member.password))
+            {
+                throw IllegalStateException("이메일 또는 비밀번호를 확인해주세요")
+            }
+
+            return LoginMemberResponse(
+                accessToken = jwtPlugin.generateAccessToken(
+                    subject = member.id.toString(),
+                    email = member.email,
+                )
             )
-        )
     }
+
+
 
     fun isValidEmail(email: String): Boolean {
         val regex = Regex("^[a-z0-9]{3,12}+@[a-z0-9-]+\\.[a-z.]+\$")

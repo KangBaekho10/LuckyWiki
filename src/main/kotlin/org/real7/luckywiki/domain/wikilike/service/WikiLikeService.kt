@@ -1,12 +1,12 @@
 package org.real7.luckywiki.domain.wikilike.service
 
-import org.real7.luckywiki.domain.exception.ModelNotFoundException
 import org.real7.luckywiki.domain.member.service.MemberService
 import org.real7.luckywiki.domain.wiki.service.WikiPageService
 import org.real7.luckywiki.domain.wikilike.dto.WikiLikeResponse
 import org.real7.luckywiki.domain.wikilike.model.WikiLike
 import org.real7.luckywiki.domain.wikilike.model.WikiLikeId
 import org.real7.luckywiki.domain.wikilike.repository.WikiLikeRepository
+import org.real7.luckywiki.exception.ModelNotFoundException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
