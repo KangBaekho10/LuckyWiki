@@ -32,9 +32,4 @@ class S3Service(
             ).url.toString() // 업로드된 URL을 반환
         }
     }
-
-    @Transactional
-    fun delete(key: String) {
-        s3Operations.deleteObject(bucket, key)
-    }
 }
