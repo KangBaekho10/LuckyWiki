@@ -1,5 +1,6 @@
 package org.real7.luckywiki.domain.wiki.service
 
+import org.real7.luckywiki.domain.member.model.Member
 import org.real7.luckywiki.domain.wiki.dto.*
 import org.real7.luckywiki.domain.wiki.model.WikiHistoryColumnType
 import org.real7.luckywiki.domain.wiki.model.WikiPage
@@ -153,5 +154,9 @@ class WikiPageService(
 
     fun getWikiHistory(wikiId: Long): List<WikiHistoryResponse> {
         return wikiHistoryCustomRepository.findHistoryById(wikiId).map { it.toResponse() }
+    }
+
+    fun getWikiById(id: Long): WikiPage {
+        return wikiPageRepository.findByIdOrNull(id) ?: throw ModelNotFoundException("Wiki", id)
     }
 }

@@ -2,6 +2,7 @@ package org.real7.luckywiki.domain.wikilike.service
 
 import org.real7.luckywiki.domain.exception.ModelNotFoundException
 import org.real7.luckywiki.domain.member.service.MemberService
+import org.real7.luckywiki.domain.wiki.service.WikiPageService
 import org.real7.luckywiki.domain.wikilike.dto.WikiLikeResponse
 import org.real7.luckywiki.domain.wikilike.model.WikiLike
 import org.real7.luckywiki.domain.wikilike.model.WikiLikeId
@@ -12,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class WikiLikeService(
     private val memberService: MemberService,
-    private val wikiService: WikiService,
+    private val wikiService: WikiPageService,
     private val wikiLikeRepository: WikiLikeRepository
 ) {
     @Transactional
