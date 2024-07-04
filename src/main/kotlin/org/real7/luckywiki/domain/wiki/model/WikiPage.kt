@@ -1,8 +1,12 @@
 package org.real7.luckywiki.domain.wiki.model
 
 import jakarta.persistence.*
+import org.real7.luckywiki.domain.member.model.Member
 import org.real7.luckywiki.domain.wiki.BaseTimeEntity
-import org.real7.luckywiki.domain.wiki.dto.*
+import org.real7.luckywiki.domain.wiki.dto.CreateWikiHistoryRequest
+import org.real7.luckywiki.domain.wiki.dto.CreateWikiPageRequest
+import org.real7.luckywiki.domain.wiki.dto.CreateWikiPageResponse
+import org.real7.luckywiki.domain.wiki.dto.WikiPageResponse
 
 
 @Entity
@@ -11,11 +15,10 @@ class WikiPage private constructor(
     title: String,
     content: String,
     tag: String,
-    memberId: Long, // Member Entity 구현 전 까지 사용 - 테스트용
-    // TODO: Member Entity 구현 후 아래 코드 사용
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "member_id")
-//    val member: Member
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    val member: Member
 ) : BaseTimeEntity() {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,7 +36,6 @@ class WikiPage private constructor(
         protected set
     var views: Long = 0
         protected set
-    val memberId: Long = memberId // TODO: Member Entity 구현 후 제거
     // createdAt, updatedAt은 BaseEntity 사용
 
     @OneToMany(mappedBy = "wikiPage", fetch = FetchType.LAZY, cascade = [CascadeType.ALL], orphanRemoval = true)
@@ -42,14 +44,13 @@ class WikiPage private constructor(
     companion object {
         fun from(
             request: CreateWikiPageRequest,
-//                 member: Member, // TODO: Member Entity 구현 후 사용
-            memberId: Long // TODO: Member Entity 구현 후 제거
+            member: Member
         ): WikiPage {
             return WikiPage(
                 title = request.title,
                 content = request.content,
                 tag = request.tag,
-                memberId = memberId
+                member = member
             )
         }
     }

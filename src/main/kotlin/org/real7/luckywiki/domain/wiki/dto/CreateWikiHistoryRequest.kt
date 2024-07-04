@@ -1,6 +1,6 @@
 package org.real7.luckywiki.domain.wiki.dto
 
-import org.real7.luckywiki.domain.wiki.model.WikiHistoryColumnType
+import org.real7.luckywiki.domain.wiki.model.type.WikiHistoryColumnType
 import org.real7.luckywiki.domain.wiki.model.WikiPage
 
 data class CreateWikiHistoryRequest(
