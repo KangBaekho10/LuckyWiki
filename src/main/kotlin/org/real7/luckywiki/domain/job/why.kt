@@ -1,6 +1,8 @@
 package org.real7.luckywiki.domain.job
 
+import org.real7.luckywiki.domain.wiki.dto.WikiPageResponse
 import org.real7.luckywiki.domain.wiki.model.WikiPage
+import org.real7.luckywiki.domain.wiki.model.toResponse
 import org.real7.luckywiki.domain.wiki.repository.WikiPageRepository
 import org.real7.luckywiki.exception.ModelNotFoundException
 import org.springframework.cache.annotation.CachePut
@@ -18,8 +20,8 @@ class why(
     val wikiPageRepository: WikiPageRepository
 ) {
 
-    @CachePut(cacheNames = ["today_wiki"])
-    @Scheduled(cron = "0 0 * * * *")
+//    @CachePut(cacheNames = ["today_wiki"])
+//    @Scheduled(cron = "0 * * * * *")
     fun real() : Long {
         val max = wikiPageRepository.findMaxId()
         var id = Random.nextLong(max!!)
@@ -32,10 +34,10 @@ class why(
     @Cacheable(cacheNames = ["today_wiki"])
     fun getId(): Long? = null
 
-//    fun getTodayWiki() : WikiPage {
-//        if(!wikiPageRepository.existsById(getId())) real()
-//
-//        return wikiPageRepository.findByIdOrNull()
-//    }
+    fun getTodayWiki() : WikiPageResponse {
+//        val id = if(!wikiPageRepository.existsById(getId()!!)) real() else getId()
+
+        return wikiPageRepository.findByIdOrNull(real())!!.toResponse()
+    }
 
 }
