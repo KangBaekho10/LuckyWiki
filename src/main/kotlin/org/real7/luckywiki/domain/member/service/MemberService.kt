@@ -52,7 +52,6 @@ class MemberService(
     fun login(request: LoginMemberRequest): LoginMemberResponse {
         val member = memberRepository.findByEmail(request.email)
 
-
             if (request.email != member!!.email || !passwordEncoder.matches(request.password, member.password))
             {
                 throw IllegalStateException("이메일 또는 비밀번호를 확인해주세요")
@@ -87,10 +86,5 @@ class MemberService(
 
     fun getMemberById(id: Long): Member {
         return memberRepository.findByIdOrNull(id) ?: throw ModelNotFoundException("Member", id)
-    }
-
-    fun getMemberDetails(): CustomMemberDetails? {
-        val principal = SecurityContextHolder.getContext().authentication.principal
-        return if (principal is CustomMemberDetails) principal else null
     }
 }

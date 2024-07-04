@@ -5,7 +5,7 @@ import org.real7.luckywiki.domain.member.model.Member
 import org.real7.luckywiki.domain.wiki.model.WikiPage
 import org.real7.luckywiki.domain.wikilike.dto.WikiLikeResponse
 
-@Entity(name = "like")
+@Entity(name = "reaction")
 class WikiLike {
     @EmbeddedId
     val wikiLikeId: WikiLikeId = WikiLikeId()
@@ -21,8 +21,8 @@ class WikiLike {
 
     fun toResponse(): WikiLikeResponse {
         return WikiLikeResponse(
-            this.wikiLikeId.member!!.name,
-            this.wikiLikeId.wiki!!.title
+            this.wikiLikeId.wiki!!.id.toString(),
+            this.wikiLikeId.member!!.id.toString(),
         )
     }
 }

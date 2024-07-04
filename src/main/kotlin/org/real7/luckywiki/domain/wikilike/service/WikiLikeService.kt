@@ -30,7 +30,7 @@ class WikiLikeService(
 
     @Transactional
     fun unlike(memberId: Long, wikiId: Long) {
-        val wikiLikeId: WikiLikeId = WikiLikeId()
+        val wikiLikeId = WikiLikeId()
         wikiLikeId.member = memberService.getMemberById(memberId)
         wikiLikeId.wiki = wikiService.getWikiById(wikiId)
         val wikiLike = wikiLikeRepository.findByWikiLikeId(wikiLikeId) ?: throw ModelNotFoundException("Follow", memberId)
