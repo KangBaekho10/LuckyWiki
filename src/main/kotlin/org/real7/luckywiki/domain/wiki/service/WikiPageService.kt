@@ -17,6 +17,7 @@ import org.real7.luckywiki.domain.wiki.repository.*
 import org.real7.luckywiki.domain.wikilike.repository.WikiLikeRepository
 import org.real7.luckywiki.exception.ModelNotFoundException
 import org.real7.luckywiki.infra.aws.S3Service
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
@@ -99,6 +100,7 @@ class WikiPageService(
         return wikiPage.createWikiPageResponse()
     }
 
+    @Cacheable("wikiPage", key = "#wikiId")
     fun getWikiPage(wikiId: Long, request: HttpServletRequest, response: HttpServletResponse): WikiPageResponse {
         val wikiPage = wikiPageRepository.findByIdOrNull(wikiId) ?: throw ModelNotFoundException("WikiPage", wikiId)
 
@@ -107,7 +109,6 @@ class WikiPageService(
         return wikiPage.toResponse()
     }
 
-    @Transactional
     fun viewCountUp(wikiId: Long, request: HttpServletRequest, response: HttpServletResponse) {
         var oldCookie: Cookie? = null
 
@@ -218,6 +219,7 @@ class WikiPageService(
         return wikiPageRepository.findByIdOrNull(id) ?: throw ModelNotFoundException("Wiki", id)
     }
 
+    @Cacheable("wikiPageList")
     fun getWikiPageList(searchType: SearchType, keyword: KeywordRequest?, pageable: Pageable): Page<WikiPageResponse> {
         if (searchType == SearchType.NONE) {
             return wikiPageCustomRepository.search(pageable).map { it.toResponse() }
@@ -228,6 +230,7 @@ class WikiPageService(
         return wikiPageCustomRepository.keywordSearch(searchType, keyword!!, pageable).map { it.toResponse() }
     }
 
+    @Cacheable("popularWordTop10")
     fun getPopularWordTop10(): List<String> {
         return popularWordCustomRepository.getPopularWordTop10()
     }
