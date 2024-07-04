@@ -1,11 +1,13 @@
 package org.real7.luckywiki.domain.debate.service
 
-import org.real7.luckywiki.domain.common.CommonResponse
+import org.real7.luckywiki.common.CommonResponse
 import org.real7.luckywiki.domain.debate.dto.CreateDebateRequest
 import org.real7.luckywiki.domain.debate.dto.DebateResponse
 import org.real7.luckywiki.domain.debate.dto.UpdateDebateRequest
 import org.real7.luckywiki.domain.debate.entity.Debate
 import org.real7.luckywiki.domain.debate.repository.DebateRepository
+import org.real7.luckywiki.domain.member.service.ExternalMemberService
+import org.real7.luckywiki.domain.wiki.service.ExternalWikiPageService
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -13,18 +15,22 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class DebateService(
     private val debateRepository: DebateRepository,
+    private val memberService: ExternalMemberService,
+    private val wikiService : ExternalWikiPageService
 ){
 
 
-    fun createDebate(createDebateRequest: CreateDebateRequest): CommonResponse {
+    fun createDebate(email: String, createDebateRequest: CreateDebateRequest): CommonResponse {
+
+        val member = memberService.searchByEmail(email)
 
         val savedData = debateRepository.save(
             Debate(
                 title = createDebateRequest.title,
                 content = createDebateRequest.content,
                 image = null,
-                member = TODO(),
-                wiki = TODO(),
+                member = member,
+                wiki = wikiService.searchByWikiId(createDebateRequest.wikiId),
                 comment = listOf()
             )
         )

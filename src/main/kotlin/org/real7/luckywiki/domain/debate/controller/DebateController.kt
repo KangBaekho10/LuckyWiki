@@ -1,12 +1,14 @@
 package org.real7.luckywiki.domain.debate.controller
 
 import org.real7.luckywiki.domain.debate.dto.CreateDebateRequest
-import org.real7.luckywiki.domain.common.CommonResponse
+import org.real7.luckywiki.common.CommonResponse
 import org.real7.luckywiki.domain.debate.dto.DebateResponse
 import org.real7.luckywiki.domain.debate.dto.UpdateDebateRequest
 import org.real7.luckywiki.domain.debate.service.DebateService
+import org.real7.luckywiki.security.UserPrincipal
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
 
 @RestController
@@ -17,10 +19,13 @@ class DebateController(
 
     @PostMapping
     fun createDebate(
+        @AuthenticationPrincipal userPrincipal: UserPrincipal?,
         createDebateRequest: CreateDebateRequest
     ): ResponseEntity<CommonResponse> {
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(debateService.createDebate(createDebateRequest))
+        if(userPrincipal == null) throw IllegalArgumentException()
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(debateService.createDebate(userPrincipal.email, createDebateRequest))
     }
 
     @GetMapping("/{debateId}")
