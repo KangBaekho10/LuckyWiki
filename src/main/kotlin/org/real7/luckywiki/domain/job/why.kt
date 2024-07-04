@@ -35,7 +35,7 @@ class why(
         return id
     }
 
-    fun getId(): Long? {
+    private fun getId(): Long? {
         val cache = cacheManager.getCache("today_wiki")
         val cachedValue = cache?.get("key")?.get()
         return cachedValue as? Long
@@ -43,8 +43,6 @@ class why(
 
 
     fun getTodayWiki() : WikiPageResponse {
-//        val id = if(!wikiPageRepository.existsById(getId()!!)) real() else getId()
-
         println("//////////${getId()}//////////")
         return wikiPageRepository.findByIdOrNull(getId())!!.toResponse()
     }
