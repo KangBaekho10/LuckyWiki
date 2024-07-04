@@ -130,7 +130,7 @@ class DebateServiceTest {
             title = "wiki",
             content = "content",
             tag = "tag",
-            memberId = 1L,
+            member = MEMBER,
         )
         private val COMMENT = Comment(
             content = "test",
