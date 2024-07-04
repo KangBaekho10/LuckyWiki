@@ -8,13 +8,13 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 
-@RequestMapping("/today")
+@RequestMapping("/api/v1")
 @RestController
 class RandomController(
     val why: why
 ) {
 
-    @GetMapping()
+    @GetMapping("/today")
     fun getToday() : ResponseEntity<WikiPageResponse> {
         return ResponseEntity.status(HttpStatus.OK).body(why.getTodayWiki())
     }
