@@ -1,7 +1,6 @@
 package org.real7.luckywiki.domain.wiki.model
 
 import jakarta.persistence.*
-import org.real7.luckywiki.domain.wiki.dto.PopularWordListResponse
 import org.springframework.data.annotation.CreatedDate
 import java.time.LocalDateTime
 
@@ -13,7 +12,7 @@ class PopularWord private constructor(
 ) {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long? = null // TODO: ID 없어도 될 것 같음
+    val id: Long? = null
 
     @CreatedDate
     @Column(name = "searched_at")
@@ -25,8 +24,4 @@ class PopularWord private constructor(
             return PopularWord(searchWord)
         }
     }
-}
-
-fun PopularWord.toListResponse(): PopularWordListResponse {
-    return PopularWordListResponse(searchWord)
 }

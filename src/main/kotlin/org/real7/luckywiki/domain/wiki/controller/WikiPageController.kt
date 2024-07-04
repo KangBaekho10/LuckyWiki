@@ -1,7 +1,6 @@
 package org.real7.luckywiki.domain.wiki.controller
 
 import jakarta.validation.Valid
-import jakarta.validation.executable.ValidateOnExecution
 import org.real7.luckywiki.domain.wiki.dto.*
 import org.real7.luckywiki.domain.wiki.model.type.SearchType
 import org.real7.luckywiki.domain.wiki.service.WikiPageService
@@ -66,6 +65,11 @@ class WikiPageController(
         @PageableDefault(page = 0, size = 10, sort = ["created_at"], direction = Sort.Direction.DESC) pageable: Pageable
     ): ResponseEntity<Page<WikiPageResponse>> {
         return ResponseEntity.ok(wikiPageService.getWikiPageList(searchType, keyword, pageable))
+    }
+
+    @GetMapping("/popular-word-top10")
+    fun getPopularWordTop10(): ResponseEntity<List<String>> {
+        return ResponseEntity.ok(wikiPageService.getPopularWordTop10())
     }
 
     // ---------------------------------------------------------------

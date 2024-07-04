@@ -1,14 +1,13 @@
 package org.real7.luckywiki.domain.wiki.service
 
 import org.real7.luckywiki.domain.wiki.dto.*
+import org.real7.luckywiki.domain.wiki.model.PopularWord
 import org.real7.luckywiki.domain.wiki.model.WikiPage
 import org.real7.luckywiki.domain.wiki.model.createWikiPageResponse
 import org.real7.luckywiki.domain.wiki.model.toResponse
 import org.real7.luckywiki.domain.wiki.model.type.SearchType
 import org.real7.luckywiki.domain.wiki.model.type.WikiHistoryColumnType
-import org.real7.luckywiki.domain.wiki.repository.WikiHistoryCustomRepository
-import org.real7.luckywiki.domain.wiki.repository.WikiPageCustomRepository
-import org.real7.luckywiki.domain.wiki.repository.WikiPageRepository
+import org.real7.luckywiki.domain.wiki.repository.*
 import org.real7.luckywiki.exception.ModelNotFoundException
 import org.real7.luckywiki.infra.aws.S3Service
 import org.springframework.data.domain.Page
@@ -25,7 +24,9 @@ class WikiPageService(
     private val wikiPageRepository: WikiPageRepository,
     private val s3Service: S3Service,
     private val wikiHistoryCustomRepository: WikiHistoryCustomRepository,
-    private val wikiPageCustomRepository: WikiPageCustomRepository
+    private val wikiPageCustomRepository: WikiPageCustomRepository,
+    private val popularWordRepository: PopularWordRepository,
+    private val popularWordCustomRepository: PopularWordCustomRepository
 ) {
 
     @Transactional
@@ -173,6 +174,12 @@ class WikiPageService(
             return wikiPageCustomRepository.search(pageable).map { it.toResponse() }
         }
 
+        keyword?.let { popularWordRepository.save(PopularWord.from(it.keyword)) }
+
         return wikiPageCustomRepository.keywordSearch(searchType, keyword!!, pageable).map { it.toResponse() }
+    }
+
+    fun getPopularWordTop10(): List<String> {
+        return popularWordCustomRepository.getPopularWordTop10()
     }
 }
