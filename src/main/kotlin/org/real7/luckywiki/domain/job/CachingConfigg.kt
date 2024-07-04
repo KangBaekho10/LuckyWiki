@@ -13,7 +13,7 @@ class CachingConfigg {
     fun cacheManager(): CacheManager {
         val cacheManager = ConcurrentMapCacheManager()
         cacheManager.isAllowNullValues = false
-        cacheManager.setCacheNames(listOf("today_topic"))
+        cacheManager.setCacheNames(listOf("today_wiki"))
         return cacheManager
     }
 }
