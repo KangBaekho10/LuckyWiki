@@ -13,32 +13,40 @@ import io.mockk.every
 import io.mockk.junit5.MockKExtension
 import org.junit.jupiter.api.extension.ExtendWith
 import org.real7.luckywiki.domain.wiki.controller.WikiPageController
-import org.real7.luckywiki.domain.wiki.dto.CreateWikiPageRequest
-import org.real7.luckywiki.domain.wiki.dto.CreateWikiPageResponse
-import org.real7.luckywiki.domain.wiki.dto.WikiPageResponse
+import org.real7.luckywiki.domain.wiki.dto.wikipage.CreateWikiPageRequest
+import org.real7.luckywiki.domain.wiki.dto.wikipage.CreateWikiPageResponse
+import org.real7.luckywiki.domain.wiki.dto.wikipage.WikiPageResponse
 import org.real7.luckywiki.domain.wiki.service.WikiPageService
 import org.real7.luckywiki.exception.ModelNotFoundException
 import org.real7.luckywiki.exception.dto.ErrorResponse
+import org.real7.luckywiki.security.jwt.JwtPlugin
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
+import org.springframework.context.annotation.Import
 import org.springframework.http.MediaType
 import org.springframework.mock.web.MockMultipartFile
+import org.springframework.security.test.context.support.WithMockUser
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart
 import java.nio.charset.StandardCharsets
 import java.time.LocalDateTime
 
+
 @WebMvcTest(WikiPageController::class)
 @ExtendWith(MockKExtension::class)
+@Import(value = [JwtPlugin::class])
+@WithMockUser(username = "user", roles = ["USER"])
 @AutoConfigureMockMvc
 class WikiPageControllerTests @Autowired constructor(
     private val mockMvc: MockMvc,
 
     @MockkBean
     private val wikiPageService: WikiPageService,
-) : DescribeSpec({
+
+    ) : DescribeSpec({
     extension(SpringExtension)
 
     afterContainer {
@@ -47,15 +55,18 @@ class WikiPageControllerTests @Autowired constructor(
 
     describe("POST /api/v1/wikis") {
         context("게시글 작성 요청을 하면") {
-            val memberId = 1L
+
             val request = MockMultipartFile(
                 "request",
                 null,
                 "application/json",
                 jacksonObjectMapper().writeValueAsString(
+                    // title: 최소 1자에서 최대 30자
+                    // content: 최소 30자부터
+                    // tag: 최소 1자에서 최대 10자
                     CreateWikiPageRequest(
                         title = "title",
-                        content = "content",
+                        content = "contentcontentcontentcontentcontentcontentcontentcontentcontentcontentcontentcontentcontentcontentcontent",
                         tag = "tag"
                     )
                 ).toByteArray(StandardCharsets.UTF_8)
@@ -64,9 +75,9 @@ class WikiPageControllerTests @Autowired constructor(
 
             it("Status Code 200과 작성된 내용을 응답으로 전달한다.") {
 
-                every { wikiPageService.createWikiPage(any(), any(), any()) } returns CreateWikiPageResponse(
+                every { wikiPageService.createWikiPage(any(), any()) } returns CreateWikiPageResponse(
                     title = "title",
-                    content = "content",
+                    content = "contentcontentcontentcontentcontentcontentcontentcontentcontentcontentcontentcontentcontentcontentcontent",
                     image = "image",
                     tag = "tag",
                     createdAt = LocalDateTime.of(2024, 7, 3, 6, 0)
@@ -76,9 +87,12 @@ class WikiPageControllerTests @Autowired constructor(
                     multipart("/api/v1/wikis")
                         .file(request)
                         .contentType(MediaType.APPLICATION_JSON)
+                        .with(csrf())
                 ).andReturn()
 
-                result.response.status shouldBe 200
+                // 403: with(csrf()) 추가로 해결
+                // 400: 입력값 유효성 체크를 통과하지 못해서 생긴 문제였음
+                result.response.status shouldBe 201 // CREATED
                 result.response.contentAsString shouldContain "title"
             }
         }
@@ -89,7 +103,7 @@ class WikiPageControllerTests @Autowired constructor(
             it("Status Code 200과 요청한 게시물에 대한 정보를 응답으로 전달한다.") {
                 val wikiPageId = 1L
 
-                every { wikiPageService.getWikiPage(any()) } returns WikiPageResponse(
+                every { wikiPageService.getWikiPage(any(), any(), any()) } returns WikiPageResponse(
                     title = "title",
                     content = "content",
                     image = "image",
@@ -119,14 +133,17 @@ class WikiPageControllerTests @Autowired constructor(
             it("Status Code 400과 요청한 게시물을 찾을 수 없다는 메시지를 응답으로 전달한다.") {
                 val wikiPageId = 10L
 
-                every { wikiPageService.getWikiPage(any()) } throws ModelNotFoundException("WikiPage", wikiPageId)
+                every { wikiPageService.getWikiPage(any(), any(), any()) } throws ModelNotFoundException(
+                    "WikiPage",
+                    wikiPageId
+                )
 
                 val result = mockMvc.perform(
                     get("/api/v1/wikis/$wikiPageId")
                         .contentType(MediaType.APPLICATION_JSON)
                 ).andReturn()
 
-                result.response.status shouldBe 400
+                result.response.status shouldBe 404
 
                 val errorResponse =
                     jacksonObjectMapper()
