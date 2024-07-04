@@ -6,7 +6,7 @@ data class CommentResponse (
 //    val id: Long,
     val content:String,
     val vote : Boolean,
-//    val member:
+    val member: Long,
     val createdAt: LocalDateTime,
     val updatedAt: LocalDateTime
 ) {

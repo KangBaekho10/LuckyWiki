@@ -15,9 +15,7 @@ class Comment private constructor(
     content : String,
     vote : Boolean,
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
-    val member: Member,
+    memberId : Long,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "debate_id")
@@ -34,6 +32,9 @@ class Comment private constructor(
     var vote: Boolean = vote
     protected set
 
+    var memberId : Long = memberId
+        protected set
+
 
     companion object {
         fun from(
@@ -44,7 +45,7 @@ class Comment private constructor(
             return Comment(
                 content = request.content,
                 vote = request.vote,
-                member = member,
+                memberId = member.id!!,
                 debate = debate
             )
         }
@@ -62,5 +63,5 @@ fun Comment.toSimpleResponse() : SimpleCommentResponse{
 }
 
 fun Comment.toResponse(): CommentResponse {
-    return CommentResponse(content, vote, createdAt, updatedAt)
+    return CommentResponse(content, vote, memberId, createdAt, updatedAt)
 }
