@@ -99,12 +99,40 @@ class WikiPageService(
         return wikiPage.createWikiPageResponse()
     }
 
-    @Transactional // 조회수 증가로 인한 트랜잭션 어노테이션 추가
     fun getWikiPage(wikiId: Long, request: HttpServletRequest, response: HttpServletResponse): WikiPageResponse {
         val wikiPage = wikiPageRepository.findByIdOrNull(wikiId) ?: throw ModelNotFoundException("WikiPage", wikiId)
-        wikiPageCustomRepository.updateViews(wikiId) // 조회수 증가
+
+        viewCountUp(wikiId, request, response)
 
         return wikiPage.toResponse()
+    }
+
+    @Transactional
+    fun viewCountUp(wikiId: Long, request: HttpServletRequest, response: HttpServletResponse) {
+        var oldCookie: Cookie? = null
+
+        request.cookies?.map {
+            if (it.name == "viewCounts") {
+                oldCookie = it
+            }
+        }
+
+        oldCookie?.let {
+            if (!it.value.contains("[${wikiId}]")) { // 쿠키에 해당 wikiId가 존재하지 않으면
+                it.value += "[${wikiId}]"
+                response.addCookie(oldCookie)
+
+                return wikiPageCustomRepository.updateViews(wikiId) // 조회수 증가
+            } else {
+                return // 존재하면
+            }
+        }
+
+        // Cookie가 없는 경우
+        val newCookieValue = "[${wikiId}]"
+        val viewCountCookie = Cookie("viewCounts", newCookieValue)
+        response.addCookie(viewCountCookie)
+        return wikiPageCustomRepository.updateViews(wikiId) // 조회수 증가
     }
 
     @Transactional
