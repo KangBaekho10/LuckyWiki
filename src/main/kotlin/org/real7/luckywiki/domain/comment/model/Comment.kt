@@ -4,6 +4,8 @@ import jakarta.persistence.*
 import org.real7.luckywiki.domain.comment.dto.CommentRequest
 import org.real7.luckywiki.domain.comment.dto.CommentResponse
 import org.real7.luckywiki.domain.comment.dto.SimpleCommentResponse
+import org.real7.luckywiki.domain.debate.entity.Debate
+import org.real7.luckywiki.domain.member.model.Member
 import org.real7.luckywiki.domain.wiki.BaseTimeEntity
 import java.time.LocalDateTime
 
@@ -13,17 +15,13 @@ class Comment private constructor(
     content : String,
     vote : Boolean,
 
-    memberId:Long,
-    debateId:Long
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    val member: Member,
 
-
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "member_id")
-//    val member: Member,
-
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "debate_id")
-//    val debate: Debate
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "debate_id")
+    val debate: Debate
 
 ) : BaseTimeEntity() {
     @Id
@@ -36,25 +34,18 @@ class Comment private constructor(
     var vote: Boolean = vote
     protected set
 
-    var memberId:Long = memberId
-        protected set
-
-    var debateId:Long = debateId
-        protected set
 
     companion object {
         fun from(
             request: CommentRequest,
-//            member: Member,
-//            debate : Debate
+            member: Member,
+            debate : Debate
         ): Comment {
             return Comment(
                 content = request.content,
                 vote = request.vote,
-                memberId = 1,
-                debateId = 1
-//                member = member,
-//                debate = debate
+                member = member,
+                debate = debate
             )
         }
     }

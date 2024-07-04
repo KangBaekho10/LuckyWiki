@@ -34,7 +34,6 @@ class Debate(
     val wiki : WikiPage,
 
     @OneToMany(mappedBy= "debate", fetch = FetchType.LAZY, orphanRemoval = true)
-    @JoinColumn(name="comment_id", nullable = false)
     val comment: List<Comment>
 ){
 
