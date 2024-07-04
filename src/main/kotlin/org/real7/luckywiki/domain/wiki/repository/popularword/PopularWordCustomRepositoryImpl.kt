@@ -1,4 +1,4 @@
-package org.real7.luckywiki.domain.wiki.repository
+package org.real7.luckywiki.domain.wiki.repository.popularword
 
 import com.querydsl.jpa.impl.JPAQueryFactory
 import org.real7.luckywiki.domain.wiki.model.QPopularWord

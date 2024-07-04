@@ -7,16 +7,21 @@ import org.real7.luckywiki.domain.debate.repository.DebateJpaRepository
 import org.real7.luckywiki.domain.member.repository.MemberRepository
 import org.real7.luckywiki.domain.member.service.MemberService
 import org.real7.luckywiki.domain.wiki.dto.*
+import org.real7.luckywiki.domain.wiki.dto.wikihistory.CreateWikiHistoryRequest
+import org.real7.luckywiki.domain.wiki.dto.wikihistory.WikiHistoryResponse
+import org.real7.luckywiki.domain.wiki.dto.wikipage.CreateWikiPageRequest
+import org.real7.luckywiki.domain.wiki.dto.wikipage.CreateWikiPageResponse
+import org.real7.luckywiki.domain.wiki.dto.wikipage.UpdateWikiPageRequest
+import org.real7.luckywiki.domain.wiki.dto.wikipage.WikiPageResponse
 import org.real7.luckywiki.domain.wiki.model.PopularWord
 import org.real7.luckywiki.domain.wiki.model.WikiPage
 import org.real7.luckywiki.domain.wiki.model.createWikiPageResponse
 import org.real7.luckywiki.domain.wiki.model.toResponse
 import org.real7.luckywiki.domain.wiki.model.type.SearchType
 import org.real7.luckywiki.domain.wiki.model.type.WikiHistoryColumnType
-import org.real7.luckywiki.domain.wiki.repository.PopularWordRepository
+import org.real7.luckywiki.domain.wiki.repository.popularword.PopularWordRepository
 import org.real7.luckywiki.domain.wiki.repository.WikiHistoryCustomRepository
-import org.real7.luckywiki.domain.wiki.repository.WikiPageCustomRepository
-import org.real7.luckywiki.domain.wiki.repository.WikiPageRepository
+import org.real7.luckywiki.domain.wiki.repository.wikipage.WikiPageRepository
 import org.real7.luckywiki.domain.wikilike.repository.WikiLikeRepository
 import org.real7.luckywiki.exception.ModelNotFoundException
 import org.real7.luckywiki.infra.aws.S3Service
@@ -33,14 +38,13 @@ import java.time.format.DateTimeFormatter
 @Service
 class WikiPageService(
     private val wikiPageRepository: WikiPageRepository,
-    private val s3Service: S3Service,
-    private val wikiHistoryCustomRepository: WikiHistoryCustomRepository,
-    private val wikiPageCustomRepository: WikiPageCustomRepository,
-    private val popularWordRepository: PopularWordRepository,
-    private val memberRepository: MemberRepository,
-    private val memberService: MemberService,
-    private val debateJpaRepository: DebateJpaRepository,
-    private val wikiLikeRepository: WikiLikeRepository
+    private val s3Service: S3Service, // 이미지 등록을 위해 추가
+    private val wikiHistoryCustomRepository: WikiHistoryCustomRepository, // 게시물 변경 이력 저장 및 조회를 위해 추가
+    private val popularWordRepository: PopularWordRepository, // 검색어 저장을 위해 추가
+    private val memberRepository: MemberRepository, // 회원 정보를 가져오기 위해 추가
+    private val memberService: MemberService, // 토큰에서 회원 정보를 가져오기 위해 추가
+    private val debateJpaRepository: DebateJpaRepository, // 연관 삭제를 위해 추가
+    private val wikiLikeRepository: WikiLikeRepository // 연관 삭제를 위해 추가
 ) {
 
     @Transactional
@@ -125,7 +129,7 @@ class WikiPageService(
                 it.value += "[${wikiId}]"
                 response.addCookie(oldCookie)
 
-                return wikiPageCustomRepository.updateViews(wikiId) // 조회수 증가
+                return wikiPageRepository.updateViews(wikiId) // 조회수 증가
             } else {
                 return // 존재하면
             }
@@ -135,7 +139,7 @@ class WikiPageService(
         val newCookieValue = "[${wikiId}]"
         val viewCountCookie = Cookie("viewCounts", newCookieValue)
         response.addCookie(viewCountCookie)
-        return wikiPageCustomRepository.updateViews(wikiId) // 조회수 증가
+        return wikiPageRepository.updateViews(wikiId) // 조회수 증가
     }
 
     @Transactional
@@ -224,12 +228,12 @@ class WikiPageService(
     @Cacheable("wikiPageList")
     fun getWikiPageList(searchType: SearchType, keyword: KeywordRequest?, pageable: Pageable): Page<WikiPageResponse> {
         if (searchType == SearchType.NONE) {
-            return wikiPageCustomRepository.search(pageable).map { it.toResponse() }
+            return wikiPageRepository.search(pageable).map { it.toResponse() }
         }
 
         keyword?.let { popularWordRepository.save(PopularWord.from(it.keyword)) }
 
-        return wikiPageCustomRepository.keywordSearch(searchType, keyword!!, pageable).map { it.toResponse() }
+        return wikiPageRepository.keywordSearch(searchType, keyword!!, pageable).map { it.toResponse() }
     }
 
     @Cacheable("popularWordTop10")

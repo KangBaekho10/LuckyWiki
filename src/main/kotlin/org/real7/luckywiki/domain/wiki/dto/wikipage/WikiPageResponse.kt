@@ -1,4 +1,4 @@
-package org.real7.luckywiki.domain.wiki.dto
+package org.real7.luckywiki.domain.wiki.dto.wikipage
 
 import java.time.LocalDateTime
 

@@ -1,4 +1,4 @@
-package org.real7.luckywiki.domain.wiki.repository
+package org.real7.luckywiki.domain.wiki.repository.popularword
 
 import org.real7.luckywiki.domain.wiki.model.PopularWord
 import org.springframework.data.jpa.repository.JpaRepository
