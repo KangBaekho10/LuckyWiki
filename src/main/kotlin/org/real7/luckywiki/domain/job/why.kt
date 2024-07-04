@@ -20,24 +20,28 @@ class why(
     val wikiPageRepository: WikiPageRepository
 ) {
 
-//    @CachePut(cacheNames = ["today_wiki"])
-//    @Scheduled(cron = "0 * * * * *")
+    @CachePut(cacheNames = ["today_wiki"])
+    @Scheduled(cron = "0 * * * * *")
     fun real() : Long {
         val max = wikiPageRepository.findMaxId()
         var id = Random.nextLong(max!!)
         while(!wikiPageRepository.existsById(id)) {
             id = Random.nextLong(max)
         }
+        println("스케쥬ㅠㄹ러는 실행이 되나?")
         return id
     }
 
     @Cacheable(cacheNames = ["today_wiki"])
-    fun getId(): Long? = null
+    fun getId(): Long? {
+        return null
+    }
 
     fun getTodayWiki() : WikiPageResponse {
 //        val id = if(!wikiPageRepository.existsById(getId()!!)) real() else getId()
 
-        return wikiPageRepository.findByIdOrNull(real())!!.toResponse()
+        println("////${real()}//////${getId()}//////////")
+        return wikiPageRepository.findByIdOrNull(getId())!!.toResponse()
     }
 
 }
