@@ -1,5 +1,8 @@
 package org.real7.luckywiki.domain.wiki.service
 
+import jakarta.servlet.http.Cookie
+import jakarta.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletResponse
 import org.real7.luckywiki.domain.debate.repository.DebateJpaRepository
 import org.real7.luckywiki.domain.member.repository.MemberRepository
 import org.real7.luckywiki.domain.member.service.MemberService
@@ -40,6 +43,7 @@ class WikiPageService(
     @Transactional
     fun createWikiPage(request: CreateWikiPageRequest, image: MultipartFile?): CreateWikiPageResponse {
         val memberId = memberService.getMemberIdFromToken()
+        val member = memberRepository.findByIdOrNull(memberId) ?: throw ModelNotFoundException("Member", memberId!!)
         val wikiPage = wikiPageRepository.save(
             WikiPage.from(
                 request = request,
@@ -47,6 +51,7 @@ class WikiPageService(
             )
         )
 
+        // history
         request.title.let {
             wikiPage.createWikiHistory(
                 CreateWikiHistoryRequest(
@@ -54,7 +59,7 @@ class WikiPageService(
                     columnType = WikiHistoryColumnType.TITLE,
                     beforeContent = wikiPage.title,
                     afterContent = it,
-                    author = "TEST"
+                    author = member.name
                 )
             )
         }
@@ -66,7 +71,7 @@ class WikiPageService(
                     columnType = WikiHistoryColumnType.CONTENT,
                     beforeContent = wikiPage.content,
                     afterContent = it,
-                    author = "TEST"
+                    author = member.name
                 )
             )
         }
@@ -86,7 +91,7 @@ class WikiPageService(
                     columnType = WikiHistoryColumnType.IMAGE,
                     beforeContent = wikiPage.image ?: "이미지 없음",
                     afterContent = imageLink,
-                    author = "TEST"
+                    author = member.name
                 )
             )
         }
@@ -94,8 +99,11 @@ class WikiPageService(
         return wikiPage.createWikiPageResponse()
     }
 
-    fun getWikiPage(wikiId: Long): WikiPageResponse {
+    @Transactional // 조회수 증가로 인한 트랜잭션 어노테이션 추가
+    fun getWikiPage(wikiId: Long, request: HttpServletRequest, response: HttpServletResponse): WikiPageResponse {
         val wikiPage = wikiPageRepository.findByIdOrNull(wikiId) ?: throw ModelNotFoundException("WikiPage", wikiId)
+        wikiPageCustomRepository.updateViews(wikiId) // 조회수 증가
+
         return wikiPage.toResponse()
     }
 
@@ -151,7 +159,7 @@ class WikiPageService(
                     columnType = WikiHistoryColumnType.IMAGE,
                     beforeContent = wikiPage.image ?: "이미지 없음",
                     afterContent = imageLink,
-                    author = "TEST"
+                    author = member.name
                 )
             )
         }
