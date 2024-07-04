@@ -22,12 +22,10 @@ class WikiPageController(
     @PostMapping
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     fun createWiki(
-        // TODO: userId는 Token의 값을 가져와야 함
         @RequestPart @Valid request: CreateWikiPageRequest,
         @RequestPart image: MultipartFile?
     ): ResponseEntity<CreateWikiPageResponse> {
-        val memberId = 1L
-        return ResponseEntity.status(HttpStatus.CREATED).body(wikiPageService.createWikiPage(memberId, request, image))
+        return ResponseEntity.status(HttpStatus.CREATED).body(wikiPageService.createWikiPage(request, image))
     }
 
     @GetMapping("/{wikiId}")

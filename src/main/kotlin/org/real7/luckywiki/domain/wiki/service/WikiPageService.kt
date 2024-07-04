@@ -1,5 +1,7 @@
 package org.real7.luckywiki.domain.wiki.service
 
+import org.real7.luckywiki.domain.member.repository.MemberRepository
+import org.real7.luckywiki.domain.member.service.MemberService
 import org.real7.luckywiki.domain.wiki.dto.*
 import org.real7.luckywiki.domain.wiki.model.PopularWord
 import org.real7.luckywiki.domain.wiki.model.WikiPage
@@ -26,17 +28,19 @@ class WikiPageService(
     private val wikiHistoryCustomRepository: WikiHistoryCustomRepository,
     private val wikiPageCustomRepository: WikiPageCustomRepository,
     private val popularWordRepository: PopularWordRepository,
-    private val popularWordCustomRepository: PopularWordCustomRepository
+    private val popularWordCustomRepository: PopularWordCustomRepository,
+    private val memberRepository: MemberRepository,
+    private val memberService: MemberService
 ) {
 
     @Transactional
-    fun createWikiPage(memberId: Long, request: CreateWikiPageRequest, image: MultipartFile?): CreateWikiPageResponse {
-        // TODO: Member 구현이 완료되면 memberRepository의 getByIdOrNull(memberId)로 회원 정보 가져오기
-//        val member = memberRepository.findByIdOrNull(memberId) ?: throw ModelNotFoundException("Member", memberId)
+    fun createWikiPage(request: CreateWikiPageRequest, image: MultipartFile?): CreateWikiPageResponse {
+        val memberId = memberService.getMemberIdFromToken()
+        val member = memberRepository.findByIdOrNull(memberId) ?: throw ModelNotFoundException("Member", memberId!!)
         val wikiPage = wikiPageRepository.save(
             WikiPage.from(
                 request = request,
-                memberId = memberId
+                member = member
             )
         )
         request.title.let {
