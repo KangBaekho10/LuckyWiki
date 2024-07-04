@@ -1,7 +1,6 @@
 package org.real7.luckywiki.domain.wiki.model
 
 import jakarta.persistence.*
-import org.real7.luckywiki.domain.member.model.Member
 import org.real7.luckywiki.domain.wiki.BaseTimeEntity
 import org.real7.luckywiki.domain.wiki.dto.CreateWikiHistoryRequest
 import org.real7.luckywiki.domain.wiki.dto.CreateWikiPageRequest
@@ -15,10 +14,7 @@ class WikiPage private constructor(
     title: String,
     content: String,
     tag: String,
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
-    val member: Member
+    memberId: Long
 ) : BaseTimeEntity() {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,13 +40,13 @@ class WikiPage private constructor(
     companion object {
         fun from(
             request: CreateWikiPageRequest,
-            member: Member
+            memberId: Long
         ): WikiPage {
             return WikiPage(
                 title = request.title,
                 content = request.content,
                 tag = request.tag,
-                member = member
+                memberId = memberId
             )
         }
     }

@@ -1,7 +1,6 @@
 package org.real7.luckywiki.domain.wiki.service
 
 import org.real7.luckywiki.domain.debate.repository.DebateJpaRepository
-import org.real7.luckywiki.domain.debate.repository.DebateRepository
 import org.real7.luckywiki.domain.member.repository.MemberRepository
 import org.real7.luckywiki.domain.member.service.MemberService
 import org.real7.luckywiki.domain.wiki.dto.*
@@ -41,13 +40,13 @@ class WikiPageService(
     @Transactional
     fun createWikiPage(request: CreateWikiPageRequest, image: MultipartFile?): CreateWikiPageResponse {
         val memberId = memberService.getMemberIdFromToken()
-        val member = memberRepository.findByIdOrNull(memberId) ?: throw ModelNotFoundException("Member", memberId!!)
         val wikiPage = wikiPageRepository.save(
             WikiPage.from(
                 request = request,
-                member = member
+                memberId = memberId!!
             )
         )
+
         request.title.let {
             wikiPage.createWikiHistory(
                 CreateWikiHistoryRequest(
