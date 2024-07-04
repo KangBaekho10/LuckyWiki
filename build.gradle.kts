@@ -89,6 +89,12 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-validation")
 
     implementation("org.springframework.boot:spring-boot-starter-webflux")
+
+    // Cache
+    implementation("org.springframework.boot:spring-boot-starter-cache")
+
+    // Aop
+    implementation("org.springframework.boot:spring-boot-starter-aop")
 }
 
 tasks.withType<KotlinCompile> {
