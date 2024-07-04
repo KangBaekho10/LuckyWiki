@@ -8,6 +8,7 @@ import org.real7.luckywiki.domain.debate.service.DebateService
 import org.real7.luckywiki.security.UserPrincipal
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
 
@@ -18,6 +19,7 @@ class DebateController(
 ){
 
     @PostMapping
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     fun createDebate(
         @AuthenticationPrincipal userPrincipal: UserPrincipal?,
         createDebateRequest: CreateDebateRequest
@@ -29,6 +31,7 @@ class DebateController(
     }
 
     @GetMapping("/{debateId}")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     fun getDebate(
         @PathVariable("debateId") debateId: Long,
     ): ResponseEntity<DebateResponse>{
@@ -37,12 +40,14 @@ class DebateController(
     }
 
     @GetMapping
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     fun getDebateList(): ResponseEntity<List<DebateResponse>>{
 
         return ResponseEntity.status(HttpStatus.OK).body(debateService.getDebateList())
     }
 
     @PutMapping("/{debateId}")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     fun updateDebate(
         @PathVariable("debateId") debateId: Long,
         @RequestBody updateDebateRequest: UpdateDebateRequest
@@ -52,6 +57,7 @@ class DebateController(
     }
 
     @DeleteMapping("/{debateId}")
+    @PreAuthorize("hasRole('ADMIN')")
     fun deleteDebate(
         @PathVariable("debateId") debateId: Long,
     ): ResponseEntity<CommonResponse>{

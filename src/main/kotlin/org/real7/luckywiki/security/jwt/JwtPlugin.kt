@@ -4,6 +4,7 @@ import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jws
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys
+import org.real7.luckywiki.domain.member.model.Role
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import java.nio.charset.StandardCharsets
@@ -27,12 +28,12 @@ class JwtPlugin {
         }
     }
 
-    fun generateAccessToken(subject: String, email: String): String {
-        return generateToken(subject, email, Duration.ofHours(ACCESS_TOKEN_EXPIRATION_HOUR))
+    fun generateAccessToken(subject: String, email: String, role: String): String {
+        return generateToken(subject, email, role, Duration.ofHours(ACCESS_TOKEN_EXPIRATION_HOUR))
     }
 
-    private fun generateToken(subject: String, email: String, expirationPeriod: Duration): String {
-        val claims: Claims = Jwts.claims().add(mapOf("email" to email)).build()
+    private fun generateToken(subject: String, email: String, role: String, expirationPeriod: Duration): String {
+        val claims: Claims = Jwts.claims().add(mapOf("email" to email, "role" to role)).build()
 
         val key = Keys.hmacShaKeyFor(SECRET.toByteArray(StandardCharsets.UTF_8))
         val now = Instant.now()
