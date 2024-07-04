@@ -3,6 +3,7 @@ package org.real7.luckywiki.domain.wiki.service
 import jakarta.servlet.http.Cookie
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
+import org.real7.luckywiki.config.LettuceRedis
 import org.real7.luckywiki.domain.debate.repository.DebateJpaRepository
 import org.real7.luckywiki.domain.member.repository.MemberRepository
 import org.real7.luckywiki.domain.member.service.MemberService
@@ -20,6 +21,7 @@ import org.real7.luckywiki.infra.aws.S3Service
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
+import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
@@ -37,7 +39,8 @@ class WikiPageService(
     private val memberRepository: MemberRepository,
     private val memberService: MemberService,
     private val debateJpaRepository: DebateJpaRepository,
-    private val wikiLikeRepository: WikiLikeRepository
+    private val wikiLikeRepository: WikiLikeRepository,
+    private val lettuceRedis: LettuceRedis
 ) {
 
     @Transactional
@@ -228,7 +231,14 @@ class WikiPageService(
         return wikiPageCustomRepository.keywordSearch(searchType, keyword!!, pageable).map { it.toResponse() }
     }
 
-    fun getPopularWordTop10(): List<String> {
-        return popularWordCustomRepository.getPopularWordTop10()
+    @Scheduled(cron = "0 0 0 * * * ")
+    fun savePopularWordTop10(){
+        val result = popularWordCustomRepository.getPopularWordTop10()
+        lettuceRedis.saveAll(result)
+    }
+
+    fun getPopularWordTop10(): List<Map<String, String>> {
+
+        return lettuceRedis.findAll()
     }
 }

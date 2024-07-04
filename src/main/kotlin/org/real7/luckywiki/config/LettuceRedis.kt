@@ -2,8 +2,6 @@ package org.real7.luckywiki.config
 
 import io.lettuce.core.RedisClient
 import io.lettuce.core.api.StatefulRedisConnection
-import io.lettuce.core.api.sync.RedisCommands
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Configuration
 
 @Configuration
