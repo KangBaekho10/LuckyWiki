@@ -97,6 +97,8 @@ class WikiPageService(
 
     @Transactional
     fun updateWikiPage(wikiId: Long, request: UpdateWikiPageRequest, image: MultipartFile?): WikiPageResponse {
+        val memberId = memberService.getMemberIdFromToken()
+        val member = memberRepository.findByIdOrNull(memberId) ?: throw ModelNotFoundException("Member", memberId!!)
         val wikiPage = wikiPageRepository.findByIdOrNull(wikiId) ?: throw ModelNotFoundException("WikiPage", wikiId)
 
         request.title?.let {
@@ -106,7 +108,7 @@ class WikiPageService(
                     columnType = WikiHistoryColumnType.TITLE,
                     beforeContent = wikiPage.title,
                     afterContent = it,
-                    author = "TEST"
+                    author = member.name
                 )
             )
         }
@@ -118,7 +120,7 @@ class WikiPageService(
                     columnType = WikiHistoryColumnType.CONTENT,
                     beforeContent = wikiPage.content,
                     afterContent = it,
-                    author = "TEST"
+                    author = member.name
                 )
             )
         }
