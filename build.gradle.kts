@@ -10,7 +10,7 @@ plugins {
     kotlin("plugin.allopen") version "1.9.24"
     kotlin("kapt") version "1.9.24"
 }
-group = "org.ubis.ubis"
+group = "org.real7.luckywiki"
 version = "0.0.1-SNAPSHOT"
 
 java {
