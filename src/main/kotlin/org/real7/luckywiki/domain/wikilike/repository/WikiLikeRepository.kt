@@ -6,4 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository
 
 interface WikiLikeRepository : JpaRepository<WikiLike, WikiLikeId> {
     fun findByWikiLikeId(wikiLikeId: WikiLikeId): WikiLike?
+
+    fun deleteByWikiLikeIdWikiId(id: Long)
 }

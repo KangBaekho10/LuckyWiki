@@ -1,5 +1,7 @@
 package org.real7.luckywiki.domain.wiki.service
 
+import org.real7.luckywiki.domain.debate.repository.DebateJpaRepository
+import org.real7.luckywiki.domain.debate.repository.DebateRepository
 import org.real7.luckywiki.domain.member.repository.MemberRepository
 import org.real7.luckywiki.domain.member.service.MemberService
 import org.real7.luckywiki.domain.wiki.dto.*
@@ -10,6 +12,7 @@ import org.real7.luckywiki.domain.wiki.model.toResponse
 import org.real7.luckywiki.domain.wiki.model.type.SearchType
 import org.real7.luckywiki.domain.wiki.model.type.WikiHistoryColumnType
 import org.real7.luckywiki.domain.wiki.repository.*
+import org.real7.luckywiki.domain.wikilike.repository.WikiLikeRepository
 import org.real7.luckywiki.exception.ModelNotFoundException
 import org.real7.luckywiki.infra.aws.S3Service
 import org.springframework.data.domain.Page
@@ -30,7 +33,9 @@ class WikiPageService(
     private val popularWordRepository: PopularWordRepository,
     private val popularWordCustomRepository: PopularWordCustomRepository,
     private val memberRepository: MemberRepository,
-    private val memberService: MemberService
+    private val memberService: MemberService,
+    private val debateJpaRepository: DebateJpaRepository,
+    private val wikiLikeRepository: WikiLikeRepository
 ) {
 
     @Transactional
@@ -155,14 +160,17 @@ class WikiPageService(
         return wikiPage.toResponse()
     }
 
+    @Transactional
     fun deleteWikiPage(wikiId: Long) {
-        // 이미지 이력을 찾아서 이미지 먼저 지우고 데이터 삭제, 데이터 먼저 삭제하면 이미지 이력을 찾아올 수 없음
-        // TODO: 연관된 테이블들의 데이터 삭제 문제!!
         val wikiPage = wikiPageRepository.findByIdOrNull(wikiId) ?: throw ModelNotFoundException("WikiPage", wikiId)
-        val imageList = wikiHistoryCustomRepository.findImageById(wikiId)
+        val imageList = wikiHistoryCustomRepository.findImageById(wikiId) // S3에서 지울 이미지 key 가져오기
 
-        wikiPage.deleteAllWikiHistory()
-        wikiPageRepository.deleteById(wikiId)
+        // DELETE
+        debateJpaRepository.deleteByWikiId(wikiId) // debate
+        wikiLikeRepository.deleteByWikiLikeIdWikiId(wikiId) // reaction
+        wikiPage.deleteAllWikiHistory() // wiki_history
+        wikiPageRepository.deleteById(wikiId) // wiki_page
+
 
         imageList.forEach { s3Service.delete(it) }
     }
