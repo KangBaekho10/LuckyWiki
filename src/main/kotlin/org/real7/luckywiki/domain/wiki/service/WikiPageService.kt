@@ -13,7 +13,10 @@ import org.real7.luckywiki.domain.wiki.model.createWikiPageResponse
 import org.real7.luckywiki.domain.wiki.model.toResponse
 import org.real7.luckywiki.domain.wiki.model.type.SearchType
 import org.real7.luckywiki.domain.wiki.model.type.WikiHistoryColumnType
-import org.real7.luckywiki.domain.wiki.repository.*
+import org.real7.luckywiki.domain.wiki.repository.PopularWordRepository
+import org.real7.luckywiki.domain.wiki.repository.WikiHistoryCustomRepository
+import org.real7.luckywiki.domain.wiki.repository.WikiPageCustomRepository
+import org.real7.luckywiki.domain.wiki.repository.WikiPageRepository
 import org.real7.luckywiki.domain.wikilike.repository.WikiLikeRepository
 import org.real7.luckywiki.exception.ModelNotFoundException
 import org.real7.luckywiki.infra.aws.S3Service
@@ -34,7 +37,6 @@ class WikiPageService(
     private val wikiHistoryCustomRepository: WikiHistoryCustomRepository,
     private val wikiPageCustomRepository: WikiPageCustomRepository,
     private val popularWordRepository: PopularWordRepository,
-    private val popularWordCustomRepository: PopularWordCustomRepository,
     private val memberRepository: MemberRepository,
     private val memberService: MemberService,
     private val debateJpaRepository: DebateJpaRepository,
@@ -232,6 +234,6 @@ class WikiPageService(
 
     @Cacheable("popularWordTop10")
     fun getPopularWordTop10(): List<String> {
-        return popularWordCustomRepository.getPopularWordTop10()
+        return popularWordRepository.getPopularWordTop10()
     }
 }
