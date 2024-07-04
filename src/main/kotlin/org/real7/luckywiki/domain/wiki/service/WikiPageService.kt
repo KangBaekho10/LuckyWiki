@@ -1,15 +1,18 @@
 package org.real7.luckywiki.domain.wiki.service
 
-import org.real7.luckywiki.domain.member.model.Member
 import org.real7.luckywiki.domain.wiki.dto.*
-import org.real7.luckywiki.domain.wiki.model.WikiHistoryColumnType
 import org.real7.luckywiki.domain.wiki.model.WikiPage
 import org.real7.luckywiki.domain.wiki.model.createWikiPageResponse
 import org.real7.luckywiki.domain.wiki.model.toResponse
+import org.real7.luckywiki.domain.wiki.model.type.SearchType
+import org.real7.luckywiki.domain.wiki.model.type.WikiHistoryColumnType
 import org.real7.luckywiki.domain.wiki.repository.WikiHistoryCustomRepository
+import org.real7.luckywiki.domain.wiki.repository.WikiPageCustomRepository
 import org.real7.luckywiki.domain.wiki.repository.WikiPageRepository
 import org.real7.luckywiki.exception.ModelNotFoundException
 import org.real7.luckywiki.infra.aws.S3Service
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -21,7 +24,8 @@ import java.time.format.DateTimeFormatter
 class WikiPageService(
     private val wikiPageRepository: WikiPageRepository,
     private val s3Service: S3Service,
-    private val wikiHistoryCustomRepository: WikiHistoryCustomRepository
+    private val wikiHistoryCustomRepository: WikiHistoryCustomRepository,
+    private val wikiPageCustomRepository: WikiPageCustomRepository
 ) {
 
     @Transactional
@@ -60,7 +64,9 @@ class WikiPageService(
 
         image?.let {
             // 신규 이미지 등록
-            val imageFileName = "${wikiPage.id.toString()}-${LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"))}"
+            val imageFileName = "${wikiPage.id.toString()}-${
+                LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"))
+            }"
             val imageLink = s3Service.upload(it, imageFileName)
 
             wikiPage.uploadImage(imageLink)
@@ -120,7 +126,9 @@ class WikiPageService(
 
         image?.let {
             // 신규 이미지 등록
-            val imageFileName = "${wikiPage.id.toString()}-${LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"))}"
+            val imageFileName = "${wikiPage.id.toString()}-${
+                LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"))
+            }"
             val imageLink = s3Service.upload(it, imageFileName)
 
             wikiPage.uploadImage(imageLink)
@@ -158,5 +166,13 @@ class WikiPageService(
 
     fun getWikiById(id: Long): WikiPage {
         return wikiPageRepository.findByIdOrNull(id) ?: throw ModelNotFoundException("Wiki", id)
+    }
+
+    fun getWikiPageList(searchType: SearchType, keyword: KeywordRequest?, pageable: Pageable): Page<WikiPageResponse> {
+        if (searchType == SearchType.NONE) {
+            return wikiPageCustomRepository.search(pageable).map { it.toResponse() }
+        }
+
+        return wikiPageCustomRepository.keywordSearch(searchType, keyword!!, pageable).map { it.toResponse() }
     }
 }
