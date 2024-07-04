@@ -2,7 +2,12 @@ package org.real7.luckywiki.domain.wiki.controller
 
 import jakarta.validation.Valid
 import org.real7.luckywiki.domain.wiki.dto.*
+import org.real7.luckywiki.domain.wiki.model.type.SearchType
 import org.real7.luckywiki.domain.wiki.service.WikiPageService
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Sort
+import org.springframework.data.web.PageableDefault
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
@@ -17,12 +22,10 @@ class WikiPageController(
     @PostMapping
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     fun createWiki(
-        // TODO: userId는 Token의 값을 가져와야 함
         @RequestPart @Valid request: CreateWikiPageRequest,
         @RequestPart image: MultipartFile?
     ): ResponseEntity<CreateWikiPageResponse> {
-        val memberId = 1L
-        return ResponseEntity.status(HttpStatus.CREATED).body(wikiPageService.createWikiPage(memberId, request, image))
+        return ResponseEntity.status(HttpStatus.CREATED).body(wikiPageService.createWikiPage(request, image))
     }
 
     @GetMapping("/{wikiId}")
@@ -53,7 +56,20 @@ class WikiPageController(
         return ResponseEntity.ok(wikiPageService.getWikiHistory(wikiId))
     }
 
-    // TODO: 태그 수정 /api/v1/wikis/{wikiId}
+    @GetMapping
+    fun getWikiPageList(
+        @RequestParam searchType: SearchType, // searchType: title, tag
+        @RequestParam @Valid keyword: KeywordRequest?,
+        @PageableDefault(page = 0, size = 10, sort = ["created_at"], direction = Sort.Direction.DESC) pageable: Pageable
+    ): ResponseEntity<Page<WikiPageResponse>> {
+        return ResponseEntity.ok(wikiPageService.getWikiPageList(searchType, keyword, pageable))
+    }
+
+    @GetMapping("/popular-word-top10")
+    fun getPopularWordTop10(): ResponseEntity<List<String>> {
+        return ResponseEntity.ok(wikiPageService.getPopularWordTop10())
+    }
+
     // ---------------------------------------------------------------
     // TODO: /api/v2/popular-word-top10
     // TODO: 일간 게시물 조회 /api/v2/daily-wiki

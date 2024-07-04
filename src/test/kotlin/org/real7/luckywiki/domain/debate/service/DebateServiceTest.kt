@@ -6,16 +6,28 @@ import io.kotest.matchers.string.shouldContain
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.Test
+import org.real7.luckywiki.domain.comment.model.Comment
 import org.real7.luckywiki.domain.debate.dto.CreateDebateRequest
 import org.real7.luckywiki.domain.debate.dto.UpdateDebateRequest
 import org.real7.luckywiki.domain.debate.entity.Debate
 import org.real7.luckywiki.domain.debate.repository.DebateRepository
+import org.real7.luckywiki.domain.member.model.Member
+import org.real7.luckywiki.domain.member.model.Role
+import org.real7.luckywiki.domain.member.repository.MemberRepository
+import org.real7.luckywiki.domain.member.service.ExternalMemberService
+import org.real7.luckywiki.domain.wiki.model.WikiPage
+import org.real7.luckywiki.domain.wiki.repository.WikiPageRepository
+import org.real7.luckywiki.domain.wiki.service.ExternalWikiPageService
 
 class DebateServiceTest {
 
 
     private val debateRepository = mockk<DebateRepository>()
-    private val debateService = DebateService(debateRepository)
+    private val memberRepository = mockk<MemberRepository>()
+    private val wikiPageRepository = mockk<WikiPageRepository>()
+    private val memberService = ExternalMemberService(memberRepository)
+    private val wikiService = ExternalWikiPageService(wikiPageRepository)
+    private val debateService = DebateService(debateRepository, memberService, wikiService)
 
     @Test
     fun `createDebate 가 정상적으로 동작 할 시 정상적으로 save 진행`(){
@@ -28,7 +40,7 @@ class DebateServiceTest {
 
         every { debateRepository.save(any()) } returns DEBATE
 
-        val result = debateService.createDebate(createDebateRequest)
+        val result = debateService.createDebate("test@test.com",createDebateRequest)
 
         result.id shouldBe 1L
         result.title shouldBe "title"
@@ -108,8 +120,23 @@ class DebateServiceTest {
             comment = listOf(COMMENT)
         )
 
-        private val MEMBER = Member()
-        private val WIKI = Wiki()
-        private val COMMENT = Comment()
+        private val MEMBER = Member(
+            email = "test@test.com",
+            name = "test",
+            password = "test",
+            role = Role.USER
+        )
+        private val WIKI = WikiPage(
+            title = "wiki",
+            content = "content",
+            tag = "tag",
+            memberId = 1L,
+        )
+        private val COMMENT = Comment(
+            content = "test",
+            vote = true,
+            member= MEMBER,
+            debate= DEBATE
+        )
     }
 }

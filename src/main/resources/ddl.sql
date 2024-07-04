@@ -58,7 +58,6 @@ CREATE TABLE reaction(
 CREATE TABLE popular_word (
                               id BIGINT AUTO_INCREMENT PRIMARY KEY NOT NULL,
                               search_word VARCHAR(30) NOT NULL,
-                              search_count INT NOT NULL,
                               searched_at TIMESTAMP NOT NULL
 );
 

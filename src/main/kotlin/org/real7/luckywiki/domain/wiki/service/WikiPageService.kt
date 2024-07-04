@@ -1,15 +1,19 @@
 package org.real7.luckywiki.domain.wiki.service
 
-import org.real7.luckywiki.domain.member.model.Member
+import org.real7.luckywiki.domain.member.repository.MemberRepository
+import org.real7.luckywiki.domain.member.service.MemberService
 import org.real7.luckywiki.domain.wiki.dto.*
-import org.real7.luckywiki.domain.wiki.model.WikiHistoryColumnType
+import org.real7.luckywiki.domain.wiki.model.PopularWord
 import org.real7.luckywiki.domain.wiki.model.WikiPage
 import org.real7.luckywiki.domain.wiki.model.createWikiPageResponse
 import org.real7.luckywiki.domain.wiki.model.toResponse
-import org.real7.luckywiki.domain.wiki.repository.WikiHistoryCustomRepository
-import org.real7.luckywiki.domain.wiki.repository.WikiPageRepository
+import org.real7.luckywiki.domain.wiki.model.type.SearchType
+import org.real7.luckywiki.domain.wiki.model.type.WikiHistoryColumnType
+import org.real7.luckywiki.domain.wiki.repository.*
 import org.real7.luckywiki.exception.ModelNotFoundException
 import org.real7.luckywiki.infra.aws.S3Service
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -21,17 +25,22 @@ import java.time.format.DateTimeFormatter
 class WikiPageService(
     private val wikiPageRepository: WikiPageRepository,
     private val s3Service: S3Service,
-    private val wikiHistoryCustomRepository: WikiHistoryCustomRepository
+    private val wikiHistoryCustomRepository: WikiHistoryCustomRepository,
+    private val wikiPageCustomRepository: WikiPageCustomRepository,
+    private val popularWordRepository: PopularWordRepository,
+    private val popularWordCustomRepository: PopularWordCustomRepository,
+    private val memberRepository: MemberRepository,
+    private val memberService: MemberService
 ) {
 
     @Transactional
-    fun createWikiPage(memberId: Long, request: CreateWikiPageRequest, image: MultipartFile?): CreateWikiPageResponse {
-        // TODO: Member 구현이 완료되면 memberRepository의 getByIdOrNull(memberId)로 회원 정보 가져오기
-//        val member = memberRepository.findByIdOrNull(memberId) ?: throw ModelNotFoundException("Member", memberId)
+    fun createWikiPage(request: CreateWikiPageRequest, image: MultipartFile?): CreateWikiPageResponse {
+        val memberId = memberService.getMemberIdFromToken()
+        val member = memberRepository.findByIdOrNull(memberId) ?: throw ModelNotFoundException("Member", memberId!!)
         val wikiPage = wikiPageRepository.save(
             WikiPage.from(
                 request = request,
-                memberId = memberId
+                member = member
             )
         )
         request.title.let {
@@ -60,7 +69,9 @@ class WikiPageService(
 
         image?.let {
             // 신규 이미지 등록
-            val imageFileName = "${wikiPage.id.toString()}-${LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"))}"
+            val imageFileName = "${wikiPage.id.toString()}-${
+                LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"))
+            }"
             val imageLink = s3Service.upload(it, imageFileName)
 
             wikiPage.uploadImage(imageLink)
@@ -86,6 +97,8 @@ class WikiPageService(
 
     @Transactional
     fun updateWikiPage(wikiId: Long, request: UpdateWikiPageRequest, image: MultipartFile?): WikiPageResponse {
+        val memberId = memberService.getMemberIdFromToken()
+        val member = memberRepository.findByIdOrNull(memberId) ?: throw ModelNotFoundException("Member", memberId!!)
         val wikiPage = wikiPageRepository.findByIdOrNull(wikiId) ?: throw ModelNotFoundException("WikiPage", wikiId)
 
         request.title?.let {
@@ -95,7 +108,7 @@ class WikiPageService(
                     columnType = WikiHistoryColumnType.TITLE,
                     beforeContent = wikiPage.title,
                     afterContent = it,
-                    author = "TEST"
+                    author = member.name
                 )
             )
         }
@@ -107,7 +120,7 @@ class WikiPageService(
                     columnType = WikiHistoryColumnType.CONTENT,
                     beforeContent = wikiPage.content,
                     afterContent = it,
-                    author = "TEST"
+                    author = member.name
                 )
             )
         }
@@ -120,7 +133,9 @@ class WikiPageService(
 
         image?.let {
             // 신규 이미지 등록
-            val imageFileName = "${wikiPage.id.toString()}-${LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"))}"
+            val imageFileName = "${wikiPage.id.toString()}-${
+                LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"))
+            }"
             val imageLink = s3Service.upload(it, imageFileName)
 
             wikiPage.uploadImage(imageLink)
@@ -158,5 +173,19 @@ class WikiPageService(
 
     fun getWikiById(id: Long): WikiPage {
         return wikiPageRepository.findByIdOrNull(id) ?: throw ModelNotFoundException("Wiki", id)
+    }
+
+    fun getWikiPageList(searchType: SearchType, keyword: KeywordRequest?, pageable: Pageable): Page<WikiPageResponse> {
+        if (searchType == SearchType.NONE) {
+            return wikiPageCustomRepository.search(pageable).map { it.toResponse() }
+        }
+
+        keyword?.let { popularWordRepository.save(PopularWord.from(it.keyword)) }
+
+        return wikiPageCustomRepository.keywordSearch(searchType, keyword!!, pageable).map { it.toResponse() }
+    }
+
+    fun getPopularWordTop10(): List<String> {
+        return popularWordCustomRepository.getPopularWordTop10()
     }
 }
