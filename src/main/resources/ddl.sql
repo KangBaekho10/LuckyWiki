@@ -61,22 +61,6 @@ CREATE TABLE popular_word (
                               searched_at TIMESTAMP NOT NULL
 );
 
-ALTER TABLE wiki_page ADD CONSTRAINT fk_wiki_page_member_id
-    FOREIGN KEY (member_id)
-        REFERENCES member (id);
-
-ALTER TABLE comment ADD CONSTRAINT fk_comment_member_id
-    FOREIGN KEY (member_id)
-        REFERENCES member (id);
-
-ALTER TABLE debate ADD CONSTRAINT fk_debate_member_id
-    FOREIGN KEY (member_id)
-        REFERENCES member (id);
-
-ALTER TABLE reaction ADD CONSTRAINT fk_reaction_member_id
-    FOREIGN KEY (member_id)
-        REFERENCES member (id);
-
 ALTER TABLE comment ADD CONSTRAINT fk_comment_debate_id
     FOREIGN KEY (debate_id)
         REFERENCES debate (id);
@@ -95,3 +79,20 @@ ALTER TABLE reaction ADD CONSTRAINT fk_reaction_wiki_id
 ALTER TABLE wiki_history ADD CONSTRAINT fk_wiki_history_wiki_id
     FOREIGN KEY (wiki_id)
         REFERENCES wiki_page (id);
+
+
+-- ALTER TABLE wiki_page ADD CONSTRAINT fk_wiki_page_member_id
+--     FOREIGN KEY (member_id)
+--         REFERENCES member (id);
+--
+-- ALTER TABLE comment ADD CONSTRAINT fk_comment_member_id
+--     FOREIGN KEY (member_id)
+--         REFERENCES member (id);
+--
+-- ALTER TABLE debate ADD CONSTRAINT fk_debate_member_id
+--     FOREIGN KEY (member_id)
+--         REFERENCES member (id);
+
+ALTER TABLE reaction ADD CONSTRAINT fk_reaction_member_id
+    FOREIGN KEY (member_id)
+        REFERENCES member (id);
