@@ -5,6 +5,8 @@ import org.real7.luckywiki.domain.wiki.model.WikiPage
 import org.real7.luckywiki.domain.wiki.model.toResponse
 import org.real7.luckywiki.domain.wiki.repository.WikiPageRepository
 import org.real7.luckywiki.exception.ModelNotFoundException
+import org.springframework.cache.Cache
+import org.springframework.cache.CacheManager
 import org.springframework.cache.annotation.CachePut
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.data.jpa.domain.AbstractPersistable_.id
@@ -17,10 +19,11 @@ import kotlin.random.Random
 @Service
 @Component
 class why(
-    val wikiPageRepository: WikiPageRepository
+    val wikiPageRepository: WikiPageRepository,
+    val cachingConfigg: CacheManager
 ) {
 
-    @CachePut(cacheNames = ["today_wiki"])
+    @Cacheable("today_wiki")
     @Scheduled(cron = "0 * * * * *")
     fun real() : Long {
         val max = wikiPageRepository.findMaxId()
@@ -28,19 +31,19 @@ class why(
         while(!wikiPageRepository.existsById(id)) {
             id = Random.nextLong(max)
         }
-        println("스케쥬ㅠㄹ러는 실행이 되나?")
         return id
     }
 
-    @Cacheable(cacheNames = ["today_wiki"])
+//    @Cacheable(cacheNames = ["today_wiki"])
     fun getId(): Long? {
-        return null
+        val cache = cachingConfigg.getCache("today_wiki")
+        return cache?.get(0L)?.get() as? Long
     }
 
     fun getTodayWiki() : WikiPageResponse {
 //        val id = if(!wikiPageRepository.existsById(getId()!!)) real() else getId()
 
-        println("////${real()}//////${getId()}//////////")
+        println("//////////${getId()}//////////")
         return wikiPageRepository.findByIdOrNull(getId())!!.toResponse()
     }
 

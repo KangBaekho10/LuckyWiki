@@ -8,9 +8,9 @@ import org.springframework.context.annotation.Configuration
 
 @EnableCaching
 @Configuration
-class CachingConfigg {
+class CachingConfig {
     @Bean
-    fun cacheManager(): CacheManager {
+    fun cacheManager(): ConcurrentMapCacheManager {
         val cacheManager = ConcurrentMapCacheManager()
         cacheManager.isAllowNullValues = false
         cacheManager.setCacheNames(listOf("today_wiki"))
