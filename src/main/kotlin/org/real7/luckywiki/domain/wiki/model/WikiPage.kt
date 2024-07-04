@@ -14,7 +14,7 @@ class WikiPage private constructor(
     title: String,
     content: String,
     tag: String,
-    memberId: Long
+    val memberId: Long
 ) : BaseTimeEntity() {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
