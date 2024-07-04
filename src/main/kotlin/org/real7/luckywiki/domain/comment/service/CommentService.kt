@@ -22,10 +22,10 @@ class CommentService (
 
     @Transactional
     fun createComment(memberId:Long, debateId:Long, request: CommentRequest): SimpleCommentResponse {
-        val member = memberRepository.findByIdOrNull(memberId) ?: throw ModelNotFoundException("Member", memberId)
+        if(!memberRepository.existsById(memberId)) throw ModelNotFoundException("Member", memberId)
         val debate = debateRepository.findByIdOrNull(debateId) ?: throw ModelNotFoundException("Debate", debateId)
         val comment = commentRepository.save(
-            Comment.from(request, member, debate )
+            Comment.from(request, memberId, debate )
         )
 
         return comment.toSimpleResponse()
@@ -33,7 +33,7 @@ class CommentService (
     @Transactional
     fun updateComment(memberId:Long, commentId:Long, request: CommentRequest): SimpleCommentResponse {
         val comment = commentRepository.findByIdOrNull(commentId) ?: throw ModelNotFoundException("comment",commentId)
-        if(memberId != comment.member.id) throw AccessDeniedException("This feed/comment is not yours!!")
+        if(memberId != comment.memberId) throw AccessDeniedException("This feed/comment is not yours!!")
         comment.updateComment(request)
         return comment.toSimpleResponse()
     }
@@ -41,7 +41,7 @@ class CommentService (
     @Transactional
     fun deleteComment(memberId:Long, commentId:Long) {
         val comment = commentRepository.findByIdOrNull(commentId) ?: throw ModelNotFoundException("comment", commentId)
-        if(memberId != comment.member.id) throw AccessDeniedException("This feed/comment is not yours!!")
+        if(memberId != comment.memberId) throw AccessDeniedException("This feed/comment is not yours!!")
         commentRepository.delete(comment)
 
     }

@@ -39,13 +39,13 @@ class Comment private constructor(
     companion object {
         fun from(
             request: CommentRequest,
-            member: Member,
+            memberId: Long,
             debate : Debate
         ): Comment {
             return Comment(
                 content = request.content,
                 vote = request.vote,
-                memberId = member.id!!,
+                memberId = memberId,
                 debate = debate
             )
         }
@@ -63,5 +63,5 @@ fun Comment.toSimpleResponse() : SimpleCommentResponse{
 }
 
 fun Comment.toResponse(): CommentResponse {
-    return CommentResponse(content, vote, memberId, createdAt, updatedAt)
+    return CommentResponse(id!!, content, vote, memberId, createdAt, updatedAt)
 }
