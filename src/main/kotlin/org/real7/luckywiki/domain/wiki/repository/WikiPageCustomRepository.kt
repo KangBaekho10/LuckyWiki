@@ -55,4 +55,11 @@ class WikiPageCustomRepository(
         return PageImpl(contents, pageable, totalCount)
     }
 
+    fun updateViews(wikiId: Long) {
+        queryFactory.update(wikiPage)
+            .set(wikiPage.views, wikiPage.views.add(1))
+            .where(wikiPage.id.eq(wikiId))
+            .execute()
+    }
+
 }
