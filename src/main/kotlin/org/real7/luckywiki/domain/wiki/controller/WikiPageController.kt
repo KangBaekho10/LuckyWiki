@@ -1,5 +1,7 @@
 package org.real7.luckywiki.domain.wiki.controller
 
+import jakarta.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.Valid
 import org.real7.luckywiki.domain.wiki.dto.*
 import org.real7.luckywiki.domain.wiki.model.type.SearchType
@@ -29,8 +31,8 @@ class WikiPageController(
     }
 
     @GetMapping("/{wikiId}")
-    fun getWikiPage(@PathVariable wikiId: Long): ResponseEntity<WikiPageResponse> {
-        return ResponseEntity.ok(wikiPageService.getWikiPage(wikiId))
+    fun getWikiPage(@PathVariable wikiId: Long, request: HttpServletRequest, response: HttpServletResponse): ResponseEntity<WikiPageResponse> {
+        return ResponseEntity.ok(wikiPageService.getWikiPage(wikiId, request, response))
     }
 
     @PutMapping("/{wikiId}")
