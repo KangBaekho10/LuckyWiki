@@ -32,6 +32,7 @@ class SecurityConfig(
                     "/api/v1/**",
                     "/swagger-ui/**",
                     "/v3/api-docs/**",
+                    "/redis"
                 ).permitAll()
                     .requestMatchers(HttpMethod.GET, "/**")
                     .permitAll()

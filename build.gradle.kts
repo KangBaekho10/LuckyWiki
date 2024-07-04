@@ -73,7 +73,7 @@ dependencies {
     // AWS S3
     implementation("io.awspring.cloud:spring-cloud-aws-starter-s3:3.1.1")
     // Redis
-    implementation("org.springframework.boot:spring-boot-starter-data-redis:3.3.0")
+//    implementation("org.springframework.boot:spring-boot-starter-data-redis:3.3.0")
     implementation("io.lettuce:lettuce-core:6.3.2.RELEASE")
 
     runtimeOnly("mysql:mysql-connector-java")
