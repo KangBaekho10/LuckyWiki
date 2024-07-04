@@ -1,4 +1,4 @@
-package org.real7.luckywiki.domain.wiki.model
+package org.real7.luckywiki.domain.wiki.model.type
 
 enum class WikiHistoryColumnType {
     TITLE,
