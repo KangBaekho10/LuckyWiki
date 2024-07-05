@@ -1,4 +1,4 @@
-package org.real7.luckywiki.domain.wiki.dto
+package org.real7.luckywiki.domain.wiki.dto.wikihistory
 
 import org.real7.luckywiki.domain.wiki.model.type.WikiHistoryColumnType
 import org.real7.luckywiki.domain.wiki.model.WikiPage

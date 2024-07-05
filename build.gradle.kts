@@ -44,7 +44,6 @@ val mockkVersion = "1.13.8"
 val queryDslVersion = "5.0.0"
 
 dependencies {
-
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
@@ -72,11 +71,10 @@ dependencies {
 
     // AWS S3
     implementation("io.awspring.cloud:spring-cloud-aws-starter-s3:3.1.1")
+
     // Redis
-//    implementation("org.springframework.boot:spring-boot-starter-data-redis:3.3.0")
     implementation("io.lettuce:lettuce-core:6.3.2.RELEASE")
 
-    runtimeOnly("mysql:mysql-connector-java")
     // TEST
     testImplementation("io.kotest:kotest-runner-junit5:$kotestVersion")
     testImplementation("io.kotest:kotest-assertions-core:$kotestVersion")
@@ -92,6 +90,16 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-validation")
 
     implementation("org.springframework.boot:spring-boot-starter-webflux")
+
+    // Cache
+    implementation("org.springframework.boot:spring-boot-starter-cache")
+
+    // Aop
+    implementation("org.springframework.boot:spring-boot-starter-aop")
+
+    // Security Test
+    testImplementation("org.springframework.security:spring-security-test")
+
 }
 
 tasks.withType<KotlinCompile> {

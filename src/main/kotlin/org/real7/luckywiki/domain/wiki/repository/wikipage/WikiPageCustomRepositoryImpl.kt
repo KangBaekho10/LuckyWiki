@@ -1,7 +1,6 @@
-package org.real7.luckywiki.domain.wiki.repository
+package org.real7.luckywiki.domain.wiki.repository.wikipage
 
 import com.querydsl.jpa.impl.JPAQueryFactory
-import net.sf.jsqlparser.statement.select.First.Keyword
 import org.real7.luckywiki.domain.wiki.dto.KeywordRequest
 import org.real7.luckywiki.domain.wiki.model.QWikiPage
 import org.real7.luckywiki.domain.wiki.model.WikiPage
@@ -13,12 +12,12 @@ import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Repository
 
 @Repository
-class WikiPageCustomRepository(
+class WikiPageCustomRepositoryImpl(
     private val queryFactory: JPAQueryFactory
-) {
+) : WikiPageCustomRepository {
     private val wikiPage = QWikiPage.wikiPage
 
-    fun search(pageable: Pageable): Page<WikiPage> {
+    override fun search(pageable: Pageable): Page<WikiPage> {
 
         val totalCount = queryFactory.select(wikiPage.count())
             .from(wikiPage)
@@ -33,11 +32,11 @@ class WikiPageCustomRepository(
         return PageImpl(contents, pageable, totalCount)
     }
 
-    fun keywordSearch(searchType: SearchType, keyword: KeywordRequest, pageable: Pageable): Page<WikiPage> {
+    override fun keywordSearch(searchType: SearchType, keyword: KeywordRequest, pageable: Pageable): Page<WikiPage> {
         val where = when (searchType) {
             SearchType.NONE -> null
-            SearchType.TITLE -> wikiPage.title.like("%${keyword.keyword}%")
-            SearchType.TAG -> wikiPage.tag.like("%${keyword.keyword}%")
+            SearchType.TITLE -> wikiPage.title.contains(keyword.keyword)
+            SearchType.TAG -> wikiPage.tag.contains(keyword.keyword)
         }
 
         val totalCount = queryFactory.select(wikiPage.count())
@@ -55,11 +54,10 @@ class WikiPageCustomRepository(
         return PageImpl(contents, pageable, totalCount)
     }
 
-    fun updateViews(wikiId: Long) {
+    override fun updateViews(wikiId: Long) {
         queryFactory.update(wikiPage)
             .set(wikiPage.views, wikiPage.views.add(1))
             .where(wikiPage.id.eq(wikiId))
             .execute()
     }
-
 }

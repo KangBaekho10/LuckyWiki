@@ -2,10 +2,10 @@ package org.real7.luckywiki.domain.wiki.model
 
 import jakarta.persistence.*
 import org.real7.luckywiki.domain.wiki.BaseTimeEntity
-import org.real7.luckywiki.domain.wiki.dto.CreateWikiHistoryRequest
-import org.real7.luckywiki.domain.wiki.dto.CreateWikiPageRequest
-import org.real7.luckywiki.domain.wiki.dto.CreateWikiPageResponse
-import org.real7.luckywiki.domain.wiki.dto.WikiPageResponse
+import org.real7.luckywiki.domain.wiki.dto.wikihistory.CreateWikiHistoryRequest
+import org.real7.luckywiki.domain.wiki.dto.wikipage.CreateWikiPageRequest
+import org.real7.luckywiki.domain.wiki.dto.wikipage.CreateWikiPageResponse
+import org.real7.luckywiki.domain.wiki.dto.wikipage.WikiPageResponse
 
 
 @Entity
