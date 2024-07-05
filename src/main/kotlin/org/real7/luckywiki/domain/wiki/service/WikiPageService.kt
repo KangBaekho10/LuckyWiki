@@ -4,9 +4,10 @@ import jakarta.servlet.http.Cookie
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.real7.luckywiki.domain.debate.repository.DebateJpaRepository
+import org.real7.luckywiki.domain.member.model.Role
 import org.real7.luckywiki.domain.member.repository.MemberRepository
 import org.real7.luckywiki.domain.member.service.MemberService
-import org.real7.luckywiki.domain.wiki.dto.*
+import org.real7.luckywiki.domain.wiki.dto.KeywordRequest
 import org.real7.luckywiki.domain.wiki.dto.wikihistory.CreateWikiHistoryRequest
 import org.real7.luckywiki.domain.wiki.dto.wikihistory.WikiHistoryResponse
 import org.real7.luckywiki.domain.wiki.dto.wikipage.CreateWikiPageRequest
@@ -19,10 +20,11 @@ import org.real7.luckywiki.domain.wiki.model.createWikiPageResponse
 import org.real7.luckywiki.domain.wiki.model.toResponse
 import org.real7.luckywiki.domain.wiki.model.type.SearchType
 import org.real7.luckywiki.domain.wiki.model.type.WikiHistoryColumnType
-import org.real7.luckywiki.domain.wiki.repository.popularword.PopularWordRepository
 import org.real7.luckywiki.domain.wiki.repository.WikiHistoryCustomRepository
+import org.real7.luckywiki.domain.wiki.repository.popularword.PopularWordRepository
 import org.real7.luckywiki.domain.wiki.repository.wikipage.WikiPageRepository
 import org.real7.luckywiki.domain.wikilike.repository.WikiLikeRepository
+import org.real7.luckywiki.exception.CustomAccessDeniedException
 import org.real7.luckywiki.exception.ModelNotFoundException
 import org.real7.luckywiki.infra.aws.S3Service
 import org.springframework.cache.annotation.Cacheable
@@ -144,9 +146,15 @@ class WikiPageService(
 
     @Transactional
     fun updateWikiPage(wikiId: Long, request: UpdateWikiPageRequest, image: MultipartFile?): WikiPageResponse {
+        // TODO: 권한이 USER, ADMIN이면 수행되는데 USER의 경우 memberId와 일치하는 경우 수정되도록 해야 함
+        // TODO:
         val memberId = memberService.getMemberIdFromToken()
         val member = memberRepository.findByIdOrNull(memberId) ?: throw ModelNotFoundException("Member", memberId!!)
         val wikiPage = wikiPageRepository.findByIdOrNull(wikiId) ?: throw ModelNotFoundException("WikiPage", wikiId)
+
+        if (member.role == Role.USER && memberId != wikiPage.memberId) {
+            throw CustomAccessDeniedException("수정 권한이 없습니다.")
+        }
 
         request.title?.let {
             wikiPage.createWikiHistory(
