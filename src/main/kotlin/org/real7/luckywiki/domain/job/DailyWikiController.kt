@@ -1,6 +1,6 @@
 package org.real7.luckywiki.domain.job
 
-import org.real7.luckywiki.domain.wiki.dto.WikiPageResponse
+import org.real7.luckywiki.domain.wiki.dto.wikipage.WikiPageResponse
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping

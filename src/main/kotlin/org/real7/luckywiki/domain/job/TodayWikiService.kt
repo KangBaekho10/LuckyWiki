@@ -1,8 +1,8 @@
 package org.real7.luckywiki.domain.job
 
-import org.real7.luckywiki.domain.wiki.dto.WikiPageResponse
+import org.real7.luckywiki.domain.wiki.dto.wikipage.WikiPageResponse
 import org.real7.luckywiki.domain.wiki.model.toResponse
-import org.real7.luckywiki.domain.wiki.repository.WikiPageRepository
+import org.real7.luckywiki.domain.wiki.repository.wikipage.WikiPageRepository
 import org.springframework.cache.CacheManager
 import org.springframework.cache.annotation.CachePut
 import org.springframework.data.repository.findByIdOrNull
