@@ -12,10 +12,13 @@ class WikiPageServiceScheduler(
     private val lettuceRedis: LettuceRedis
 ){
 
-    @Scheduled(cron = "0 0 * * * *")
+    @Scheduled(cron = "0 * * * * *")
     fun savePopularWordTop10(){
         val result = popularWordRepository.getPopularWordTop10()
-        lettuceRedis.saveAll("top10", result, 3600)
+
+        lettuceRedis.saveAllHashSet("top10", result, 3600)
+//        lettuceRedis.saveAll("top10", result, 3600)
+
     }
 
 }

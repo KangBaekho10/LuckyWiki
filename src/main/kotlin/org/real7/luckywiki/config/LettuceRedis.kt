@@ -20,10 +20,22 @@ class LettuceRedis(
         commend.set(keyString,value as String)
     }
 
+    fun <T, S> saveHashSet(matchingKey: String, key: T, value: S, expiredTime: Long){
+        commend.expire("*", expiredTime)
+        commend.hset(matchingKey, key as String, value as String)
+    }
+
     fun <T> saveAll(matchingKey: String, wordList:List<T>, expiredTime: Long){
 
         wordList.forEachIndexed { index, word ->
             save(matchingKey, index.toString(), word as String, expiredTime)
+        }
+    }
+
+    fun <T> saveAllHashSet(matchingKey: String, wordList:List<T>, expiredTime: Long){
+
+        wordList.forEachIndexed { index, word ->
+            saveHashSet(matchingKey, index.toString(), word as String, expiredTime)
         }
     }
 
@@ -36,6 +48,10 @@ class LettuceRedis(
        }
 
        return mapList
+    }
+
+    fun findHashSet(matchingKey: String): Map<String, String>{
+        return commend.hgetall(matchingKey)
     }
 
 }

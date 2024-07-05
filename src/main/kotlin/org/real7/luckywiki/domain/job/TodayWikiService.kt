@@ -1,6 +1,7 @@
 package org.real7.luckywiki.domain.job
 
 import org.real7.luckywiki.domain.wiki.dto.wikipage.WikiPageResponse
+import org.real7.luckywiki.domain.wiki.model.WikiPage
 import org.real7.luckywiki.domain.wiki.model.toResponse
 import org.real7.luckywiki.domain.wiki.repository.wikipage.WikiPageRepository
 import org.springframework.cache.CacheManager
@@ -32,8 +33,8 @@ class TodayWikiService(
     }
 
 
-    fun getTodayWiki() : WikiPageResponse {
-        return wikiPageRepository.findByIdOrNull(getId())!!.toResponse()
+    fun getTodayWiki() : WikiPage {
+        return wikiPageRepository.findByIdOrNull(getId())!!
     }
 
 }
