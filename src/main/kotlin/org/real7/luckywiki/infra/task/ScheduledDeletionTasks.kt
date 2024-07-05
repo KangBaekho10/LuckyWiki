@@ -10,7 +10,7 @@ class ScheduledDeletionTasks(
 ) {
 
     @Scheduled(cron = "0 0 0 * * *") // 24시간 마다 삭제
-    fun deleteDataPast24Hours() {
+    fun deletePopularWordDataPast24Hours() {
         popularWordRepository.deleteDataPast24Hours()
     }
 }
