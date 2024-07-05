@@ -23,7 +23,6 @@ class why(
     val cacheManager: CacheManager
 ) {
 
-
     @CachePut(cacheNames = ["today_wiki"], key = "'key'")
     fun real(): Long {
         val max = wikiPageRepository.findMaxId() ?: throw IllegalArgumentException("Max ID not found")
