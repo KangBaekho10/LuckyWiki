@@ -38,4 +38,9 @@ class GlobalExceptionHandler {
             )
         )
     }
+
+    @ExceptionHandler(CustomAccessDeniedException::class)
+    fun handleCustomAccessDeniedException(e: CustomAccessDeniedException): ResponseEntity<ErrorResponse> {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ErrorResponse(e.message))
+    }
 }

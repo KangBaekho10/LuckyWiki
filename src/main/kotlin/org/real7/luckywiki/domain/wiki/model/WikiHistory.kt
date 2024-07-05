@@ -1,8 +1,8 @@
 package org.real7.luckywiki.domain.wiki.model
 
 import jakarta.persistence.*
-import org.real7.luckywiki.domain.wiki.dto.CreateWikiHistoryRequest
-import org.real7.luckywiki.domain.wiki.dto.WikiHistoryResponse
+import org.real7.luckywiki.domain.wiki.dto.wikihistory.CreateWikiHistoryRequest
+import org.real7.luckywiki.domain.wiki.dto.wikihistory.WikiHistoryResponse
 import org.springframework.data.annotation.CreatedDate
 import java.time.LocalDateTime
 

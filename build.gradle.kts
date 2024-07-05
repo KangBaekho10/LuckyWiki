@@ -68,12 +68,10 @@ dependencies {
 
     // MySQL
     implementation("com.mysql:mysql-connector-j:8.3.0")
-    runtimeOnly("mysql:mysql-connector-java")
 
     // AWS S3
     implementation("io.awspring.cloud:spring-cloud-aws-starter-s3:3.1.1")
 
-    runtimeOnly("mysql:mysql-connector-java")
     // TEST
     testImplementation("io.kotest:kotest-runner-junit5:$kotestVersion")
     testImplementation("io.kotest:kotest-assertions-core:$kotestVersion")
@@ -89,6 +87,16 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-validation")
 
     implementation("org.springframework.boot:spring-boot-starter-webflux")
+
+    // Cache
+    implementation("org.springframework.boot:spring-boot-starter-cache")
+
+    // Aop
+    implementation("org.springframework.boot:spring-boot-starter-aop")
+
+    // Security Test
+    testImplementation("org.springframework.security:spring-security-test")
+
 }
 
 tasks.withType<KotlinCompile> {

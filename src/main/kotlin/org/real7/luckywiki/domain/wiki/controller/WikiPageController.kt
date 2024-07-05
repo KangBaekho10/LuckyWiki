@@ -4,6 +4,11 @@ import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.Valid
 import org.real7.luckywiki.domain.wiki.dto.*
+import org.real7.luckywiki.domain.wiki.dto.wikihistory.WikiHistoryResponse
+import org.real7.luckywiki.domain.wiki.dto.wikipage.CreateWikiPageRequest
+import org.real7.luckywiki.domain.wiki.dto.wikipage.CreateWikiPageResponse
+import org.real7.luckywiki.domain.wiki.dto.wikipage.UpdateWikiPageRequest
+import org.real7.luckywiki.domain.wiki.dto.wikipage.WikiPageResponse
 import org.real7.luckywiki.domain.wiki.model.type.SearchType
 import org.real7.luckywiki.domain.wiki.service.WikiPageService
 import org.springframework.data.domain.Page
@@ -62,7 +67,7 @@ class WikiPageController(
     fun getWikiPageList(
         @RequestParam searchType: SearchType, // searchType: title, tag
         @RequestParam @Valid keyword: KeywordRequest?,
-        @PageableDefault(page = 0, size = 10, sort = ["created_at"], direction = Sort.Direction.DESC) pageable: Pageable
+        @PageableDefault(page = 0, size = 10, sort = ["createdAt"], direction = Sort.Direction.DESC) pageable: Pageable
     ): ResponseEntity<Page<WikiPageResponse>> {
         return ResponseEntity.ok(wikiPageService.getWikiPageList(searchType, keyword, pageable))
     }
