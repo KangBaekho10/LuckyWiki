@@ -109,6 +109,7 @@ class WikiPageService(
     }
 
     @Cacheable("wikiPage", key = "#wikiId")
+    @Transactional
     fun getWikiPage(wikiId: Long, request: HttpServletRequest, response: HttpServletResponse): WikiPageResponse {
         val wikiPage = wikiPageRepository.findByIdOrNull(wikiId) ?: throw ModelNotFoundException("WikiPage", wikiId)
 
@@ -146,8 +147,6 @@ class WikiPageService(
 
     @Transactional
     fun updateWikiPage(wikiId: Long, request: UpdateWikiPageRequest, image: MultipartFile?): WikiPageResponse {
-        // TODO: 권한이 USER, ADMIN이면 수행되는데 USER의 경우 memberId와 일치하는 경우 수정되도록 해야 함
-        // TODO:
         val memberId = memberService.getMemberIdFromToken()
         val member = memberRepository.findByIdOrNull(memberId) ?: throw ModelNotFoundException("Member", memberId!!)
         val wikiPage = wikiPageRepository.findByIdOrNull(wikiId) ?: throw ModelNotFoundException("WikiPage", wikiId)
@@ -233,7 +232,7 @@ class WikiPageService(
         return wikiPageRepository.findByIdOrNull(id) ?: throw ModelNotFoundException("Wiki", id)
     }
 
-    @Cacheable("wikiPageList")
+    @Transactional
     fun getWikiPageList(searchType: SearchType, keyword: KeywordRequest?, pageable: Pageable): Page<WikiPageResponse> {
         if (searchType == SearchType.NONE) {
             return wikiPageRepository.search(pageable).map { it.toResponse() }

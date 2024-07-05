@@ -18,8 +18,8 @@ class CacheConfig {
         simpleCacheManager.setCaches(
             listOf(
                 ConcurrentMapCache("popularWordTop10"),
-                ConcurrentMapCache("wikiPageList"),
-                ConcurrentMapCache("wikiPage")
+                ConcurrentMapCache("wikiPage"),
+                ConcurrentMapCache("today_wiki")
             )
         )
         return simpleCacheManager
