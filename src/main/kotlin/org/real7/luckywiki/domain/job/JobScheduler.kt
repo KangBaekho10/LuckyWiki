@@ -10,12 +10,13 @@ class JobScheduler(
     private val todayWikiService: TodayWikiService
 ){
 
-    @Scheduled(cron = "0 0 0 * * *")
+    @Scheduled(cron = "0 * * * * *")
     fun savedTodayWiki(){
 
         val result = todayWikiService.getTodayWiki()
-        val mapResult = mapOf("title" to result.title, "content" to result.content)
 
-        lettuceRedis.save("todayWiki", result.id, result, 86400)
+        val resultMap = mapOf("title" to result.title, "content" to result.content, "image" to result.image)
+
+        lettuceRedis.saveAllHashSet("TodayWiki", resultMap, 86400)
     }
 }

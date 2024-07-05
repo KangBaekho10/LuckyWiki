@@ -1,5 +1,6 @@
 package org.real7.luckywiki.domain.job
 
+import org.real7.luckywiki.config.LettuceRedis
 import org.real7.luckywiki.domain.wiki.dto.wikipage.WikiPageResponse
 import org.real7.luckywiki.domain.wiki.model.WikiPage
 import org.real7.luckywiki.domain.wiki.model.toResponse
@@ -13,7 +14,8 @@ import kotlin.random.Random
 @Service
 class TodayWikiService(
     val wikiPageRepository: WikiPageRepository,
-    val cacheManager: CacheManager
+    val cacheManager: CacheManager,
+    val lettuceRedis: LettuceRedis
 ) {
 
     @CachePut(cacheNames = ["today_wiki"], key = "'key'")
@@ -35,6 +37,10 @@ class TodayWikiService(
 
     fun getTodayWiki() : WikiPage {
         return wikiPageRepository.findByIdOrNull(getId())!!
+    }
+
+    fun getTodayWikiRedis() : Map<String, String> {
+        return lettuceRedis.findHashSet("TodayWiki")
     }
 
 }

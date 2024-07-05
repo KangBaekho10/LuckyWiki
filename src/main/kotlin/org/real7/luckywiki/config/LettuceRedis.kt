@@ -39,6 +39,13 @@ class LettuceRedis(
         }
     }
 
+    fun <T, S> saveAllHashSet(matchingKey: String, keyValueMap: Map<T, S>, expiredTime: Long){
+
+        keyValueMap.forEach {
+            saveHashSet(matchingKey, it.key , it.value, expiredTime)
+        }
+    }
+
     fun findAll(matchingKey: String): List<Map<String, String>>{
        val keys = commend.keys("*$matchingKey*")
        val mapList: MutableList<Map<String, String>> = mutableListOf()
@@ -53,5 +60,4 @@ class LettuceRedis(
     fun findHashSet(matchingKey: String): Map<String, String>{
         return commend.hgetall(matchingKey)
     }
-
 }

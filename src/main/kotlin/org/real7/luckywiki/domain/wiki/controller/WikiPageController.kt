@@ -10,7 +10,9 @@ import org.real7.luckywiki.domain.wiki.dto.wikipage.CreateWikiPageResponse
 import org.real7.luckywiki.domain.wiki.dto.wikipage.UpdateWikiPageRequest
 import org.real7.luckywiki.domain.wiki.dto.wikipage.WikiPageResponse
 import org.real7.luckywiki.domain.wiki.model.type.SearchType
+import org.real7.luckywiki.domain.wiki.repository.popularword.PopularWordRepository
 import org.real7.luckywiki.domain.wiki.service.WikiPageService
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
@@ -73,7 +75,7 @@ class WikiPageController(
     }
 
     @GetMapping("/popular-word-top10")
-    fun getPopularWordTop10(): ResponseEntity<Map<String,String>> {
+    fun getPopularWordTop10(): ResponseEntity<List<String>> {
         return ResponseEntity.ok(wikiPageService.getPopularWordTop10())
     }
 

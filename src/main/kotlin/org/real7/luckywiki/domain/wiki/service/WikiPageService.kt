@@ -246,9 +246,12 @@ class WikiPageService(
         return wikiPageRepository.keywordSearch(searchType, keyword!!, pageable).map { it.toResponse() }
     }
 
+    @Cacheable("popularWordTop10")
+    fun getPopularWordTop10(): List<String> {
+        return popularWordRepository.getPopularWordTop10()
+    }
 
-
-    fun getPopularWordTop10(): Map<String, String> {
+    fun getPopularWordTop10Redis(): Map<String, String> {
 
         return lettuceRedis.findHashSet("top10")
 //        return lettuceRedis.findAll("top10")
