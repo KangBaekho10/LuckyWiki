@@ -13,7 +13,7 @@ class WikiPageServiceScheduler(
 ){
     val log = LoggerFactory.getLogger("LuckyWikiPageServiceScheduler")
 
-    @Scheduled(cron = "0 * * * * *")
+    @Scheduled(cron = "0 0 * * * *")
     fun savePopularWordTop10(){
         log.info("schedule is run")
         val result = popularWordRepository.getPopularWordTop10()
