@@ -35,8 +35,8 @@ class TodayWikiService(
     }
 
 
-    fun getTodayWiki() : WikiPage {
-        return wikiPageRepository.findByIdOrNull(getId())!!
+    fun getTodayWiki() : WikiPageResponse {
+        return wikiPageRepository.findByIdOrNull(getId())!!.toResponse()
     }
 
     fun getTodayWikiRedis() : Map<String, String> {

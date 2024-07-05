@@ -17,7 +17,7 @@ class DailyWikiController(
 
     @GetMapping("/today")
     fun getToday() : ResponseEntity<WikiPageResponse> {
-        return ResponseEntity.status(HttpStatus.OK).body(todayWikiService.getTodayWiki().toResponse())
+        return ResponseEntity.status(HttpStatus.OK).body(todayWikiService.getTodayWiki())
     }
 
 }
