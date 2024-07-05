@@ -31,7 +31,8 @@ class LettuceRedis(
        val keys = commend.keys("*$matchingKey*")
        val mapList: MutableList<Map<String, String>> = mutableListOf()
        keys.forEachIndexed{ index, it ->
-          mapList.add(index, mapOf("key" to it, "value" to commend.get(it)))
+          val key = it.substringAfter("${matchingKey}_")
+          mapList.add(index, mapOf("key" to key, "value" to commend.get(it)))
        }
 
        return mapList
