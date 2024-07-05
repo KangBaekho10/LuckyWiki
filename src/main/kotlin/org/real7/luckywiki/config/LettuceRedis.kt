@@ -12,22 +12,23 @@ class LettuceRedis(
     private val commend = connection.sync()
 
 
-    fun <T, S>save(key: T, value: S){
+    fun <T, S>save(matchingKey: String, key: T, value: S, expiredTime: Long){
 
-        commend.expire("*", 3600)
+        val keyString = "${matchingKey}_$key"
+        commend.expire("*", expiredTime)
 
-        commend.set(key as String,value as String)
+        commend.set(keyString,value as String)
     }
 
-    fun <T> saveAll( wordList:List<T> ){
+    fun <T> saveAll(matchingKey: String, wordList:List<T>, expiredTime: Long){
 
         wordList.forEachIndexed { index, word ->
-            save(index.toString(), word as String)
+            save(matchingKey, index.toString(), word as String, expiredTime)
         }
     }
 
-    fun findAll(): List<Map<String, String>>{
-       val keys = connection.sync().keys("*")
+    fun findAll(matchingKey: String): List<Map<String, String>>{
+       val keys = commend.keys("*$matchingKey*")
        val mapList: MutableList<Map<String, String>> = mutableListOf()
        keys.forEachIndexed{ index, it ->
           mapList.add(index, mapOf("key" to it, "value" to commend.get(it)))

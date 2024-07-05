@@ -11,13 +11,11 @@ class WikiPageServiceScheduler(
     private val popularWordRepository: PopularWordCustomRepository,
     private val lettuceRedis: LettuceRedis
 ){
-    val log = LoggerFactory.getLogger("LuckyWikiPageServiceScheduler")
 
     @Scheduled(cron = "0 0 * * * *")
     fun savePopularWordTop10(){
-        log.info("schedule is run")
         val result = popularWordRepository.getPopularWordTop10()
-        lettuceRedis.saveAll(result)
+        lettuceRedis.saveAll("top10", result, 3600)
     }
 
 }

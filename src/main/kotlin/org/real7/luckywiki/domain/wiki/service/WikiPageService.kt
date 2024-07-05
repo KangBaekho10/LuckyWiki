@@ -250,6 +250,6 @@ class WikiPageService(
 
     fun getPopularWordTop10(): List<Map<String, String>> {
 
-        return lettuceRedis.findAll()
+        return lettuceRedis.findAll("top10")
     }
 }
