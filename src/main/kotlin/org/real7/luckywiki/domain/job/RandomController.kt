@@ -11,12 +11,12 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/api/v1")
 @RestController
 class RandomController(
-    val why: why
+    val todayWikiService: TodayWikiService
 ) {
 
     @GetMapping("/today")
     fun getToday() : ResponseEntity<WikiPageResponse> {
-        return ResponseEntity.status(HttpStatus.OK).body(why.getTodayWiki())
+        return ResponseEntity.status(HttpStatus.OK).body(todayWikiService.getTodayWiki())
     }
 
 }

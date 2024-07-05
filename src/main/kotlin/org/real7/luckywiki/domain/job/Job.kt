@@ -5,12 +5,12 @@ import org.springframework.stereotype.Component
 
 @Component
 class Job(
-    val why: why
+    val todayWikiService: TodayWikiService
 ) {
 
     @Scheduled(cron = "0 * * * * *")
     fun sc() {
-        why.real()
+        todayWikiService.real()
     }
 
 }
