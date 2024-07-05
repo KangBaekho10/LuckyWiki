@@ -68,7 +68,7 @@ class WikiPageController(
     }
 
     @GetMapping("/popular-word-top10")
-    fun getPopularWordTop10(): ResponseEntity<List<String>> {
+    fun getPopularWordTop10(): ResponseEntity<List<Map<String,String>>> {
         return ResponseEntity.ok(wikiPageService.getPopularWordTop10())
     }
 

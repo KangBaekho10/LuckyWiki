@@ -22,7 +22,7 @@ class DebateController(
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     fun createDebate(
         @AuthenticationPrincipal userPrincipal: UserPrincipal?,
-        createDebateRequest: CreateDebateRequest
+        @RequestBody createDebateRequest: CreateDebateRequest
     ): ResponseEntity<CommonResponse> {
 
         if(userPrincipal == null) throw IllegalArgumentException()

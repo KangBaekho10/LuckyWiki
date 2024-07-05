@@ -12,15 +12,17 @@ class LettuceRedis(
     private val commend = connection.sync()
 
 
-    fun save(key: String, value: String){
+    fun <T, S>save(key: T, value: S){
 
-        commend.set(key,value)
+        commend.expire("*", 3600)
+
+        commend.set(key as String,value as String)
     }
 
-    fun saveAll( wordList:List<String> ){
+    fun <T> saveAll( wordList:List<T> ){
 
         wordList.forEachIndexed { index, word ->
-            save(index.toString(), word)
+            save(index.toString(), word as String)
         }
     }
 

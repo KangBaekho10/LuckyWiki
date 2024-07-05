@@ -231,11 +231,7 @@ class WikiPageService(
         return wikiPageCustomRepository.keywordSearch(searchType, keyword!!, pageable).map { it.toResponse() }
     }
 
-    @Scheduled(cron = "0 0 0 * * * ")
-    fun savePopularWordTop10(){
-        val result = popularWordCustomRepository.getPopularWordTop10()
-        lettuceRedis.saveAll(result)
-    }
+
 
     fun getPopularWordTop10(): List<Map<String, String>> {
 

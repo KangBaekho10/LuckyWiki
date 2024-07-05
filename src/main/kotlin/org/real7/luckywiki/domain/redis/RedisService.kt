@@ -12,7 +12,7 @@ class RedisService(
 
     @Transactional
     fun createRedis(id: Long, name: String){
-        lettuceRedis.save(id.toString(), name)
+        lettuceRedis.save(id, name)
     }
 
 
