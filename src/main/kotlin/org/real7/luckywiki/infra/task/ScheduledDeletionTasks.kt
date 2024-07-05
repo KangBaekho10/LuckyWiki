@@ -9,8 +9,8 @@ class ScheduledDeletionTasks(
     private val popularWordRepository: PopularWordRepository
 ) {
 
-    @Scheduled(cron = "0 * * * * *") // 1분마다 실행 -> 24시간 마다 삭제로 변경해야 함, 인기 검색어는 24시간 기준
-    fun reportCurrentTime() {
+    @Scheduled(cron = "0 0 0 * * *") // 24시간 마다 삭제
+    fun deleteDataPast24Hours() {
         popularWordRepository.deleteDataPast24Hours()
     }
 }
