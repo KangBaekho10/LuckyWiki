@@ -67,7 +67,7 @@ class WikiPageController(
     fun getWikiPageList(
         @RequestParam searchType: SearchType, // searchType: title, tag
         @RequestParam @Valid keyword: KeywordRequest?,
-        @PageableDefault(page = 0, size = 10, sort = ["created_at"], direction = Sort.Direction.DESC) pageable: Pageable
+        @PageableDefault(page = 0, size = 10, sort = ["createdAt"], direction = Sort.Direction.DESC) pageable: Pageable
     ): ResponseEntity<Page<WikiPageResponse>> {
         return ResponseEntity.ok(wikiPageService.getWikiPageList(searchType, keyword, pageable))
     }
