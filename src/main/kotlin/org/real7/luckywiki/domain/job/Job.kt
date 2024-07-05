@@ -8,7 +8,8 @@ class Job(
     val todayWikiService: TodayWikiService
 ) {
 
-    @Scheduled(cron = "0 * * * * *")
+
+    @Scheduled(cron = "0 0 * * * *")
     fun sc() {
         todayWikiService.real()
     }

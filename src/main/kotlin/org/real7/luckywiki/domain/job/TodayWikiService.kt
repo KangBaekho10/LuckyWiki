@@ -25,10 +25,11 @@ class TodayWikiService(
         return id
     }
 
-    private fun getId(): Long? {
+    private fun getId(): Long {
         val cache = cacheManager.getCache("today_wiki")
         val cachedValue = cache?.get("key")?.get()
-        return cachedValue as? Long
+        if(cachedValue == null) return real()
+        return cachedValue as Long
     }
 
 
