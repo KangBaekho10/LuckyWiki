@@ -1,5 +1,6 @@
 package org.real7.luckywiki.domain.job
 
+import org.real7.luckywiki.common.MatchingKey
 import org.real7.luckywiki.config.LettuceRedis
 import org.real7.luckywiki.domain.wiki.dto.wikipage.WikiPageResponse
 import org.real7.luckywiki.domain.wiki.model.WikiPage
@@ -40,7 +41,7 @@ class TodayWikiService(
     }
 
     fun getTodayWikiRedis() : Map<String, String> {
-        return lettuceRedis.findHashSet("TodayWiki")
+        return lettuceRedis.findHashSet(MatchingKey.TODAYWIKI)
     }
 
 }

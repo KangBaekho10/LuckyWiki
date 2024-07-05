@@ -2,6 +2,7 @@ package org.real7.luckywiki.config
 
 import io.lettuce.core.RedisClient
 import io.lettuce.core.api.StatefulRedisConnection
+import org.real7.luckywiki.common.MatchingKey
 import org.springframework.context.annotation.Configuration
 
 @Configuration
@@ -12,7 +13,7 @@ class LettuceRedis(
     private val commend = connection.sync()
 
 
-    fun <T, S>save(matchingKey: String, key: T, value: S, expiredTime: Long){
+    fun <T, S>save(matchingKey: MatchingKey, key: T, value: S, expiredTime: Long){
 
         val keyString = "${matchingKey}_$key"
         commend.expire("*", expiredTime)
@@ -20,26 +21,26 @@ class LettuceRedis(
         commend.set(keyString,value as String)
     }
 
-    fun <T, S> saveHashSet(matchingKey: String, key: T, value: S, expiredTime: Long){
+    fun <T, S> saveHashSet(matchingKey: MatchingKey, key: T, value: S, expiredTime: Long){
         commend.expire("*", expiredTime)
-        commend.hset(matchingKey, key as String, value as String)
+        commend.hset(matchingKey.name, key as String, value as String)
     }
 
-    fun <T> saveAll(matchingKey: String, wordList:List<T>, expiredTime: Long){
+    fun <T> saveAll(matchingKey: MatchingKey, wordList:List<T>, expiredTime: Long){
 
         wordList.forEachIndexed { index, word ->
             save(matchingKey, index.toString(), word as String, expiredTime)
         }
     }
 
-    fun <T> saveAllHashSet(matchingKey: String, wordList:List<T>, expiredTime: Long){
+    fun <T> saveAllHashSet(matchingKey: MatchingKey, wordList:List<T>, expiredTime: Long){
 
         wordList.forEachIndexed { index, word ->
             saveHashSet(matchingKey, index.toString(), word as String, expiredTime)
         }
     }
 
-    fun <T, S> saveAllHashSet(matchingKey: String, keyValueMap: Map<T, S>, expiredTime: Long){
+    fun <T, S> saveAllHashSet(matchingKey: MatchingKey, keyValueMap: Map<T, S>, expiredTime: Long){
 
         keyValueMap.forEach {
             saveHashSet(matchingKey, it.key , it.value, expiredTime)
@@ -57,7 +58,7 @@ class LettuceRedis(
        return mapList
     }
 
-    fun findHashSet(matchingKey: String): Map<String, String>{
-        return commend.hgetall(matchingKey)
+    fun findHashSet(matchingKey: MatchingKey): Map<String, String>{
+        return commend.hgetall(matchingKey.name)
     }
 }

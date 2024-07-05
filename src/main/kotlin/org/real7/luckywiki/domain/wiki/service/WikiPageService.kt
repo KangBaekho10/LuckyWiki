@@ -3,6 +3,7 @@ package org.real7.luckywiki.domain.wiki.service
 import jakarta.servlet.http.Cookie
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
+import org.real7.luckywiki.common.MatchingKey
 import org.real7.luckywiki.config.LettuceRedis
 import org.real7.luckywiki.domain.debate.repository.DebateJpaRepository
 import org.real7.luckywiki.domain.member.model.Role
@@ -253,7 +254,7 @@ class WikiPageService(
 
     fun getPopularWordTop10Redis(): Map<String, String> {
 
-        return lettuceRedis.findHashSet("top10")
+        return lettuceRedis.findHashSet(MatchingKey.TOP10)
 //        return lettuceRedis.findAll("top10")
     }
 }
