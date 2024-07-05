@@ -1,6 +1,5 @@
 package org.real7.luckywiki.domain.wiki.model
 
-import WikiHistoryResponse
 import jakarta.persistence.*
 import org.real7.luckywiki.domain.wiki.dto.wikihistory.CreateWikiHistoryRequest
 import org.real7.luckywiki.domain.wiki.dto.wikihistory.WikiHistoryResponse

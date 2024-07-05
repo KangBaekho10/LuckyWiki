@@ -1,7 +1,7 @@
 package org.real7.luckywiki.domain.wiki.service
 
 import org.real7.luckywiki.config.LettuceRedis
-import org.real7.luckywiki.domain.wiki.repository.PopularWordCustomRepository
+import org.real7.luckywiki.domain.wiki.repository.popularword.PopularWordCustomRepository
 import org.slf4j.LoggerFactory
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
