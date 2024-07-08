@@ -14,8 +14,6 @@ import org.real7.luckywiki.domain.comment.controller.CommentController
 import org.real7.luckywiki.domain.comment.dto.CommentRequest
 import org.real7.luckywiki.domain.comment.dto.SimpleCommentResponse
 import org.real7.luckywiki.domain.comment.service.CommentService
-import org.real7.luckywiki.domain.wiki.dto.CreateWikiPageRequest
-import org.real7.luckywiki.domain.wiki.dto.CreateWikiPageResponse
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
@@ -24,7 +22,6 @@ import org.springframework.mock.web.MockMultipartFile
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart
 import java.nio.charset.StandardCharsets
-import java.time.LocalDateTime
 
 
 @WebMvcTest(CommentController::class)

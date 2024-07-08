@@ -31,7 +31,7 @@ class Debate(
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "wiki_id", nullable = false)
-    val wiki : WikiPage,
+    var wiki : WikiPage,
 
     @OneToMany(mappedBy= "debate", fetch = FetchType.LAZY, orphanRemoval = true)
     val comment: List<Comment>

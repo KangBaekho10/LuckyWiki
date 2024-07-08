@@ -6,6 +6,7 @@ import io.kotest.matchers.string.shouldContain
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.Test
+import org.real7.luckywiki.domain.comment.dto.CommentRequest
 import org.real7.luckywiki.domain.comment.model.Comment
 import org.real7.luckywiki.domain.debate.dto.CreateDebateRequest
 import org.real7.luckywiki.domain.debate.dto.UpdateDebateRequest
@@ -15,8 +16,9 @@ import org.real7.luckywiki.domain.member.model.Member
 import org.real7.luckywiki.domain.member.model.Role
 import org.real7.luckywiki.domain.member.repository.MemberRepository
 import org.real7.luckywiki.domain.member.service.ExternalMemberService
+import org.real7.luckywiki.domain.wiki.dto.wikipage.CreateWikiPageRequest
 import org.real7.luckywiki.domain.wiki.model.WikiPage
-import org.real7.luckywiki.domain.wiki.repository.WikiPageRepository
+import org.real7.luckywiki.domain.wiki.repository.wikipage.WikiPageRepository
 import org.real7.luckywiki.domain.wiki.service.ExternalWikiPageService
 
 class DebateServiceTest {
@@ -38,7 +40,12 @@ class DebateServiceTest {
             content = "content",
         )
 
+        every { memberRepository.findByEmail(any()) } returns MEMBER
+
+        every { wikiService.searchByWikiId(any()) } returns WIKI
+
         every { debateRepository.save(any()) } returns DEBATE
+
 
         val result = debateService.createDebate("test@test.com",createDebateRequest)
 
@@ -97,8 +104,6 @@ class DebateServiceTest {
 
         every { debateRepository.findByIdOrNull(any()) } returns DEBATE
 
-        DEBATE.update(updateDebateRequest)
-
         every { debateRepository.save(any()) } returns DEBATE
 
         val result = debateService.updateDebate(1L, updateDebateRequest)
@@ -110,33 +115,40 @@ class DebateServiceTest {
 
 
     companion object{
-        private val DEBATE = Debate(
-            id = 1L,
+        private val createWikiPageRequest = CreateWikiPageRequest(
             title = "title",
             content = "content",
-            image = "image",
-            member = MEMBER,
-            wiki = WIKI,
-            comment = listOf(COMMENT)
+            tag = "tag"
         )
 
+        private val commentRequest = CommentRequest(
+            content = "content",
+            vote = true
+        )
         private val MEMBER = Member(
             email = "test@test.com",
             name = "test",
             password = "test",
             role = Role.USER
         )
-        private val WIKI = WikiPage(
-            title = "wiki",
+
+
+        private var WIKI: WikiPage = WikiPage.from(createWikiPageRequest, 1L)
+
+        private var DEBATE = Debate(
+            id = 1L,
+            title = "title",
             content = "content",
-            tag = "tag",
+            image = "image",
             member = MEMBER,
+            wiki = WIKI,
+            comment = listOf()
         )
-        private val COMMENT = Comment(
-            content = "test",
-            vote = true,
-            member= MEMBER,
-            debate= DEBATE
-        )
+        private val COMMENT: Comment = Comment.from(commentRequest, 1L, DEBATE)
+
+
+
+
+
     }
 }

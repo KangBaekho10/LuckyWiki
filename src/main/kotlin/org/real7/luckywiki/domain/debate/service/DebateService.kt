@@ -23,6 +23,7 @@ class DebateService(
     fun createDebate(email: String, createDebateRequest: CreateDebateRequest): CommonResponse {
 
         val member = memberService.searchByEmail(email)
+        val wiki = wikiService.searchByWikiId(createDebateRequest.wikiId)
 
         val savedData = debateRepository.save(
             Debate(
@@ -30,7 +31,7 @@ class DebateService(
                 content = createDebateRequest.content,
                 image = null,
                 member = member,
-                wiki = wikiService.searchByWikiId(createDebateRequest.wikiId),
+                wiki = wiki,
                 comment = listOf()
             )
         )
