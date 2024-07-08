@@ -16,7 +16,7 @@ import org.real7.luckywiki.domain.wiki.controller.WikiPageController
 import org.real7.luckywiki.domain.wiki.dto.wikipage.CreateWikiPageRequest
 import org.real7.luckywiki.domain.wiki.dto.wikipage.CreateWikiPageResponse
 import org.real7.luckywiki.domain.wiki.dto.wikipage.WikiPageResponse
-import org.real7.luckywiki.domain.wiki.service.WikiPageService
+import org.real7.luckywiki.domain.wiki.service.WikiPageServiceImpl
 import org.real7.luckywiki.exception.ModelNotFoundException
 import org.real7.luckywiki.exception.dto.ErrorResponse
 import org.real7.luckywiki.security.jwt.JwtPlugin
@@ -44,7 +44,7 @@ class WikiPageControllerTests @Autowired constructor(
     private val mockMvc: MockMvc,
 
     @MockkBean
-    private val wikiPageService: WikiPageService,
+    private val wikiPageService: WikiPageServiceImpl,
 
     ) : DescribeSpec({
     extension(SpringExtension)

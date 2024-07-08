@@ -10,9 +10,7 @@ import org.real7.luckywiki.domain.wiki.dto.wikipage.CreateWikiPageResponse
 import org.real7.luckywiki.domain.wiki.dto.wikipage.UpdateWikiPageRequest
 import org.real7.luckywiki.domain.wiki.dto.wikipage.WikiPageResponse
 import org.real7.luckywiki.domain.wiki.model.type.SearchType
-import org.real7.luckywiki.domain.wiki.repository.popularword.PopularWordRepository
-import org.real7.luckywiki.domain.wiki.service.WikiPageService
-import org.springframework.cache.annotation.Cacheable
+import org.real7.luckywiki.domain.wiki.service.WikiPageServiceImpl
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
@@ -26,7 +24,7 @@ import org.springframework.web.multipart.MultipartFile
 @RestController
 @RequestMapping("/api/v1/wikis")
 class WikiPageController(
-    private val wikiPageService: WikiPageService
+    private val wikiPageService: WikiPageServiceImpl
 ) {
     @PostMapping
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
