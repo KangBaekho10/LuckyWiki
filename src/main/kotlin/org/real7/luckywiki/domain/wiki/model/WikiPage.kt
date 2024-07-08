@@ -75,5 +75,5 @@ fun WikiPage.createWikiPageResponse(): CreateWikiPageResponse {
 }
 
 fun WikiPage.toResponse(): WikiPageResponse {
-    return WikiPageResponse(title, content, image, tag, reaction, views, createdAt, updatedAt)
+    return WikiPageResponse(title, content, image, tag, reaction, views, createdAt.toString(), updatedAt.toString())
 }

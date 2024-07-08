@@ -74,6 +74,7 @@ dependencies {
 
     // Redis
     implementation("io.lettuce:lettuce-core:6.3.2.RELEASE")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2")
 
     // TEST
     testImplementation("io.kotest:kotest-runner-junit5:$kotestVersion")

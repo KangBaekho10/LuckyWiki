@@ -257,4 +257,65 @@ class WikiPageService(
         return lettuceRedis.findHashSet(MatchingKey.TOP10)
 //        return lettuceRedis.findAll("top10")
     }
+
+    fun getWikiRedis(searchType: SearchType, keyword: KeywordRequest): WikiPageResponse {
+        val redisResult = lettuceRedis.findHashSet(keyword.keyword)
+
+        return if(redisResult.isEmpty()) {
+            savedRedisAndToResponse(searchType, keyword)
+        }else{
+            WikiPageResponse.from(redisResult)
+        }
+    }
+
+
+    private fun savedRedisAndToResponse(searchType: SearchType, keyword: KeywordRequest): WikiPageResponse {
+
+        if (searchType == SearchType.NONE || searchType == SearchType.TITLE) {
+            val result = wikiPageRepository.findByTitle(keyword.keyword) ?: return WikiPageResponse(
+                title = "",
+                content = "",
+                image = "",
+                tag = "",
+                reaction = 0L,
+                views = 0L,
+                createdAt = LocalDateTime.now().toString(),
+                updatedAt = LocalDateTime.now().toString(),
+            )
+
+            savedRedis(result, keyword)
+
+            return result.toResponse()
+        }
+
+        val result = wikiPageRepository.findByTag(keyword.keyword) ?: return WikiPageResponse(
+            title = "",
+            content = "",
+            image = "",
+            tag = "",
+            reaction = 0L,
+            views = 0L,
+            createdAt = LocalDateTime.now().toString(),
+            updatedAt = LocalDateTime.now().toString(),
+        )
+
+        savedRedis(result, keyword)
+
+        return result.toResponse()
+    }
+
+    private fun savedRedis(args: WikiPage, keyword: KeywordRequest){
+        val resultMap = mapOf(
+            "title" to args.title,
+            "content" to args.content,
+            "image" to args.image,
+            "tag" to args.tag,
+            "reaction" to args.reaction.toString(),
+            "views" to args.views.toString(),
+            "created_at" to args.createdAt.toString(),
+            "updated_at" to args.updatedAt.toString(),
+        )
+
+        lettuceRedis.saveAllHashSet(keyword.keyword, resultMap, 3600)
+    }
 }

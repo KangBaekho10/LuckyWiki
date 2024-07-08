@@ -32,7 +32,8 @@ class SecurityConfig(
                     "/api/v1/**",
                     "/swagger-ui/**",
                     "/v3/api-docs/**",
-                    "/redis"
+                    "/redis",
+                    "/api/v2/wikis"
                 ).permitAll()
                     .requestMatchers(HttpMethod.GET, "/**")
                     .permitAll()

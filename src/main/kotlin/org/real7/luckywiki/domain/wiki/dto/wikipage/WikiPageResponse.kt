@@ -9,6 +9,22 @@ data class WikiPageResponse(
     val tag: String,
     val reaction: Long,
     val views: Long,
-    val createdAt: LocalDateTime,
-    val updatedAt: LocalDateTime
-)
+    val createdAt: String,
+    val updatedAt: String
+){
+    companion object{
+        fun from(redisMap: Map<String, String>): WikiPageResponse{
+
+            return WikiPageResponse(
+                title = redisMap["title"] as String,
+                content = redisMap["content"] as String,
+                image = redisMap["image"] as String,
+                tag = redisMap["tag"] as String,
+                reaction = redisMap["reaction"].toString().toLong(),
+                views = redisMap["views"].toString().toLong(),
+                createdAt = redisMap["created_at"]!!,
+                updatedAt = redisMap["updated_at"]!!
+            )
+        }
+    }
+}

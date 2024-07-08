@@ -3,7 +3,9 @@ package org.real7.luckywiki.config
 import io.lettuce.core.RedisClient
 import io.lettuce.core.api.StatefulRedisConnection
 import org.real7.luckywiki.common.MatchingKey
+import org.real7.luckywiki.domain.wiki.model.type.SearchType
 import org.springframework.context.annotation.Configuration
+
 
 @Configuration
 class LettuceRedis(
@@ -11,6 +13,7 @@ class LettuceRedis(
     private val redisClient = RedisClient.create("redis://localhost:6379")
     private val connection: StatefulRedisConnection<String, String> = redisClient.connect()
     private val commend = connection.sync()
+
 
 
     fun <T, S>save(matchingKey: MatchingKey, key: T, value: S, expiredTime: Long){
@@ -24,6 +27,11 @@ class LettuceRedis(
     fun <T, S> saveHashSet(matchingKey: MatchingKey, key: T, value: S, expiredTime: Long){
         commend.expire("*", expiredTime)
         commend.hset(matchingKey.name, key as String, value as String)
+    }
+
+    fun <T, S> saveHashSet(matchingKey: String, key: T, value: S, expiredTime: Long){
+        commend.expire("*", expiredTime)
+        commend.hset(matchingKey, key as String, value as String)
     }
 
     fun <T> saveAll(matchingKey: MatchingKey, wordList:List<T>, expiredTime: Long){
@@ -47,6 +55,13 @@ class LettuceRedis(
         }
     }
 
+    fun <T, S> saveAllHashSet(matchingKey: String, keyValueMap: Map<T, S>, expiredTime: Long){
+
+        keyValueMap.forEach {
+            saveHashSet(matchingKey, it.key as String, it.value as String, expiredTime)
+        }
+    }
+
     fun findAll(matchingKey: String): List<Map<String, String>>{
        val keys = commend.keys("*$matchingKey*")
        val mapList: MutableList<Map<String, String>> = mutableListOf()
@@ -61,4 +76,9 @@ class LettuceRedis(
     fun findHashSet(matchingKey: MatchingKey): Map<String, String>{
         return commend.hgetall(matchingKey.name)
     }
+
+    fun findHashSet(matchingKey: String): Map<String, String>{
+        return commend.hgetall(matchingKey)
+    }
+
 }

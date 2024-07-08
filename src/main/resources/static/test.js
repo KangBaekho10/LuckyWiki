@@ -10,13 +10,13 @@ export let options = {
     vus: 10, // 가상 사용자 수
     duration: "10s" , // 테스트 시간
 
-    // stages: [
-    //     { duration: '2s', target: 5 },
-    //     { duration: '10s', target: 5 },
-    //     { duration: '3s', target: 10 },
-    //     { duration: '30s', target: 10 },
-    //     { duration: '3s', target: 0 },
-    // ],
+    stages: [
+        { duration: '2s', target: 5 },
+        { duration: '10s', target: 5 },
+        { duration: '3s', target: 10 },
+        { duration: '30s', target: 10 },
+        { duration: '3s', target: 0 },
+    ],
     ext: {
         loadimpact: {
             projectID: 123456,
@@ -31,23 +31,23 @@ export default function () {
     sleep(10);
 }
 
-// //POST
-// export default function (){
-//
-//     const url = 'http://localhost/api/v1/wikis'; // 테스트 url 입력
-//
-//     let payloads = {
-//         title : "title",
-//         content : "content",
-//         tags : "tags",
-//     }
-//
-//     let params = {
-//         headers: {
-//             'Content-Type': 'application/json',
-//         },
-//     };
-//     http.post(url,payloads, params)
-//
-//
-// }
+//POST
+export default function (){
+
+    const url = 'http://localhost/api/v1/wikis'; // 테스트 url 입력
+
+    let payloads = {
+        title : "title",
+        content : "content",
+        tags : "tags",
+    }
+
+    let params = {
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    };
+    http.post(url,payloads, params)
+
+
+}
