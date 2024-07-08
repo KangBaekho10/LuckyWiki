@@ -4,6 +4,7 @@ import io.lettuce.core.RedisClient
 import io.lettuce.core.api.StatefulRedisConnection
 import org.real7.luckywiki.common.MatchingKey
 import org.real7.luckywiki.domain.wiki.model.type.SearchType
+import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Configuration
 
 
@@ -13,8 +14,13 @@ class LettuceRedis(
     private val redisClient = RedisClient.create("redis://localhost:6379")
     private val connection: StatefulRedisConnection<String, String> = redisClient.connect()
     private val commend = connection.sync()
+    private val logger = LoggerFactory.getLogger("LettuceRedis::class.java")
 
+    init {
+        // 만료 시간이 짧은 순서 대로 제거
+        commend.configSet("maxmemory-policy", RedisEviction.VOLATILE_TTL.policy)
 
+    }
 
     fun <T, S>save(matchingKey: MatchingKey, key: T, value: S, expiredTime: Long){
 
