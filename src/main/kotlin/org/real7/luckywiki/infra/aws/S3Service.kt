@@ -2,6 +2,7 @@ package org.real7.luckywiki.infra.aws
 
 import io.awspring.cloud.s3.ObjectMetadata
 import io.awspring.cloud.s3.S3Operations
+import org.real7.luckywiki.common.FileUtils
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -12,10 +13,13 @@ class S3Service(
     private val s3Operations: S3Operations,
     @Value("\${spring.cloud.aws.s3.bucket}")
     private val bucket: String,
+    private val fileUtils: FileUtils
 ) {
 
     @Transactional
     fun upload(file: MultipartFile, key: String): String {
+        fileUtils.fileTrust(file)
+
         // 업로드할 이미지 확장자 목록 정의
         val imageTypes = listOf("jpg", "jpeg", "png", "gif", "bmp")
 
