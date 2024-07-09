@@ -248,16 +248,25 @@ class WikiPageServiceImplV2(
 
         val titleList = result.map { it["title"]!! }
 
-        if (searchType == SearchType.NONE){
-            if(pageable.pageNumber == 0) return convertToPage(result, pageable)
 
-            return wikiPageRepository.searchExceptTop10(pageable, titleList).map { it.toResponse() }
+        when(searchType){
+            SearchType.NONE -> {
+                if(pageable.pageNumber == 0) return convertToPage(result, pageable)
 
+                return wikiPageRepository.searchExceptTop10(pageable, titleList).map { it.toResponse() }
+            }
+            SearchType.TITLE -> {
+                if(pageable.pageNumber == 0) return convertToPage(result.filter { it["title"]?.contains(keyword?.keyword ?: "") == true }.toMutableList(), pageable)
+
+                return wikiPageRepository.keywordSearch(searchType, keyword!!, pageable).map { it.toResponse() }
+            }
+            SearchType.TAG -> {
+                if(pageable.pageNumber == 0) return convertToPage(result.filter { it["title"]?.contains(keyword?.keyword ?: "") == true }.toMutableList(), pageable)
+
+                return wikiPageRepository.keywordSearch(searchType, keyword!!, pageable).map { it.toResponse() }
+            }
+            else -> throw IllegalArgumentException()
         }
-
-        if(pageable.pageNumber == 0) return convertToPage(result, pageable)
-
-        return wikiPageRepository.searchExceptTop10(pageable, titleList).map { it.toResponse() }
 
     }
 

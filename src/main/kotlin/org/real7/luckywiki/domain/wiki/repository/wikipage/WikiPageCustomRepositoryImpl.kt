@@ -81,6 +81,29 @@ class WikiPageCustomRepositoryImpl(
         return PageImpl(contents, pageable, totalCount)
     }
 
+    override fun keywordSearchExceptTop10(searchType: SearchType, keyword: KeywordRequest, pageable: Pageable, top10List: List<String>): Page<WikiPage> {
+        val where = when (searchType) {
+            SearchType.TITLE -> wikiPage.title.contains(keyword.keyword)
+            SearchType.TAG -> wikiPage.tag.contains(keyword.keyword)
+            else -> throw IllegalArgumentException()
+        }
+
+        val query = queryFactory.selectFrom(wikiPage)
+
+            query.where(where).where(filteringTop10(top10List))
+
+        if (pageable.sort.isSorted) {
+            query.orderBy(*QueryDslSortUtil.getOrderSpecifier(wikiPage, pageable.sort))
+
+        }
+
+        val result = query.offset(pageable.offset)
+            .limit(pageable.pageSize.toLong())
+            .fetch()
+
+        return PageImpl(result, pageable, result.size.toLong())
+    }
+
     override fun updateViews(wikiId: Long) {
         queryFactory.update(wikiPage)
             .set(wikiPage.views, wikiPage.views.add(1))
