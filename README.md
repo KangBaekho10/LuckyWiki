@@ -1,4 +1,4 @@
-# ![free-icon-billiard-ball-7190685 (1)](https://github.com/KangBaekho10/LuckyWiki/assets/166815465/7512aed3-d7e4-4109-ae75-7e946fe14d38) LuckyWiki
+# ![7](https://github.com/KangBaekho10/LuckyWiki/assets/166815465/b5413805-7c23-4d85-a049-d0c67e8ffeb7) LuckyWiki
 
 불특정 다수가 협업을 통해 직접 내용과 구조를 수정할 수 있는 위키 백과 구축
 
