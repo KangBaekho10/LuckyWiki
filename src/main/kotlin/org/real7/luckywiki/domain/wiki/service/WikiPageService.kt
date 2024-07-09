@@ -8,7 +8,6 @@ import org.real7.luckywiki.domain.wiki.dto.wikipage.CreateWikiPageRequest
 import org.real7.luckywiki.domain.wiki.dto.wikipage.CreateWikiPageResponse
 import org.real7.luckywiki.domain.wiki.dto.wikipage.UpdateWikiPageRequest
 import org.real7.luckywiki.domain.wiki.dto.wikipage.WikiPageResponse
-import org.real7.luckywiki.domain.wiki.model.WikiPage
 import org.real7.luckywiki.domain.wiki.model.type.SearchType
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable

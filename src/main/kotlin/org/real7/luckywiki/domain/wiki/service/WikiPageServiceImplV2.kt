@@ -55,7 +55,7 @@ class WikiPageServiceImplV2(
     @Transactional
     override fun createWikiPage(request: CreateWikiPageRequest, image: MultipartFile?): CreateWikiPageResponse {
         val memberId = memberService.getMemberIdFromToken()
-        val member = memberRepository.findByIdOrNull(memberId) ?: throw ModelNotFoundException("Member", memberId!!)
+        val member = memberRepository.findByIdOrNull(memberId) ?: throw ModelNotFoundException("Member", memberId!!.toString())
         val wikiPage = wikiPageRepository.save(
             WikiPage.from(
                 request = request,
@@ -114,7 +114,7 @@ class WikiPageServiceImplV2(
     @Cacheable("wikiPage", key = "#wikiId")
     @Transactional
     override fun getWikiPage(wikiId: Long, request: HttpServletRequest, response: HttpServletResponse): WikiPageResponse {
-        val wikiPage = wikiPageRepository.findByIdOrNull(wikiId) ?: throw ModelNotFoundException("WikiPage", wikiId)
+        val wikiPage = wikiPageRepository.findByIdOrNull(wikiId) ?: throw ModelNotFoundException("WikiPage", wikiId.toString())
 
         viewCountUp(wikiId, request, response)
 
@@ -162,8 +162,8 @@ class WikiPageServiceImplV2(
     @Transactional
     override fun updateWikiPage(wikiId: Long, request: UpdateWikiPageRequest, image: MultipartFile?): WikiPageResponse {
         val memberId = memberService.getMemberIdFromToken()
-        val member = memberRepository.findByIdOrNull(memberId) ?: throw ModelNotFoundException("Member", memberId!!)
-        val wikiPage = wikiPageRepository.findByIdOrNull(wikiId) ?: throw ModelNotFoundException("WikiPage", wikiId)
+        val member = memberRepository.findByIdOrNull(memberId) ?: throw ModelNotFoundException("Member", memberId!!.toString())
+        val wikiPage = wikiPageRepository.findByIdOrNull(wikiId) ?: throw ModelNotFoundException("WikiPage", wikiId.toString())
 
         if (member.role == Role.USER && memberId != wikiPage.memberId) {
             throw CustomAccessDeniedException("수정 권한이 없습니다.")
@@ -225,7 +225,7 @@ class WikiPageServiceImplV2(
 
     @Transactional
     override fun deleteWikiPage(wikiId: Long) {
-        val wikiPage = wikiPageRepository.findByIdOrNull(wikiId) ?: throw ModelNotFoundException("WikiPage", wikiId)
+        val wikiPage = wikiPageRepository.findByIdOrNull(wikiId) ?: throw ModelNotFoundException("WikiPage", wikiId.toString())
         val imageList = wikiHistoryCustomRepository.findImageById(wikiId) // S3에서 지울 이미지 key 가져오기
 
         // DELETE
@@ -262,39 +262,21 @@ class WikiPageServiceImplV2(
     private fun savedRedisAndToResponse(searchType: SearchType, keyword: KeywordRequest): WikiPageResponse {
 
         if (searchType == SearchType.NONE || searchType == SearchType.TITLE) {
-            val result = wikiPageRepository.findByTitle(keyword.keyword) ?: return WikiPageResponse(
-                title = "",
-                content = "",
-                image = "",
-                tag = "",
-                reaction = 0L,
-                views = 0L,
-                createdAt = LocalDateTime.now().toString(),
-                updatedAt = LocalDateTime.now().toString(),
-            )
+            val result = wikiPageRepository.findByTitle(keyword.keyword) ?: throw ModelNotFoundException("WikiPage", keyword.keyword)
 
-            savedRedis(result, keyword)
+            savedRedis(result)
 
             return result.toResponse()
         }
 
-        val result = wikiPageRepository.findByTag(keyword.keyword) ?: return WikiPageResponse(
-            title = "",
-            content = "",
-            image = "",
-            tag = "",
-            reaction = 0L,
-            views = 0L,
-            createdAt = LocalDateTime.now().toString(),
-            updatedAt = LocalDateTime.now().toString(),
-        )
+        val result = wikiPageRepository.findByTag(keyword.keyword) ?: throw ModelNotFoundException("WikiPage", keyword.keyword)
 
-        savedRedis(result, keyword)
+        savedRedis(result)
 
         return result.toResponse()
     }
 
-    private fun savedRedis(args: WikiPage, keyword: KeywordRequest){
+    private fun savedRedis(args: WikiPage){
         val resultMap = mapOf(
             "title" to args.title,
             "content" to args.content,
@@ -306,7 +288,7 @@ class WikiPageServiceImplV2(
             "updated_at" to args.updatedAt.toString(),
         )
 
-        lettuceRedis.saveAllHashSet(keyword.keyword, resultMap, 3600)
+        lettuceRedis.saveAllHashSet(args.title, resultMap, 3600)
     }
 
 }

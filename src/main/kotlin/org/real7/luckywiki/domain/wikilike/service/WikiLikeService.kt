@@ -33,7 +33,7 @@ class WikiLikeService(
         val wikiLikeId = WikiLikeId()
         wikiLikeId.member = memberService.getMemberById(memberId)
         wikiLikeId.wiki = wikiService.getWikiById(wikiId)
-        val wikiLike = wikiLikeRepository.findByWikiLikeId(wikiLikeId) ?: throw ModelNotFoundException("Follow", memberId)
+        val wikiLike = wikiLikeRepository.findByWikiLikeId(wikiLikeId) ?: throw ModelNotFoundException("Follow", memberId.toString())
         wikiLikeRepository.delete(wikiLike)
     }
 }

@@ -3,7 +3,6 @@ package org.real7.luckywiki.config
 import io.lettuce.core.RedisClient
 import io.lettuce.core.api.StatefulRedisConnection
 import org.real7.luckywiki.common.MatchingKey
-import org.real7.luckywiki.domain.wiki.model.type.SearchType
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Configuration
 
@@ -47,6 +46,7 @@ class LettuceRedis(
         }
     }
 
+    // 매칭키 가 고정 이고 key 를 숫자로 주고 싶은 경우
     fun <T> saveAllHashSet(matchingKey: MatchingKey, wordList:List<T>, expiredTime: Long){
 
         wordList.forEachIndexed { index, word ->
@@ -54,6 +54,7 @@ class LettuceRedis(
         }
     }
 
+    // 매칭키 가 고정 이고 key 를 내가 원하는 키로 주고 싶은 경우
     fun <T, S> saveAllHashSet(matchingKey: MatchingKey, keyValueMap: Map<T, S>, expiredTime: Long){
 
         keyValueMap.forEach {
@@ -61,6 +62,7 @@ class LettuceRedis(
         }
     }
 
+    // 매칭키를 수동으로 설정 하고 고정 이고 key 를 내가 원하는 키로 주고 싶은 경우
     fun <T, S> saveAllHashSet(matchingKey: String, keyValueMap: Map<T, S>, expiredTime: Long){
 
         keyValueMap.forEach {

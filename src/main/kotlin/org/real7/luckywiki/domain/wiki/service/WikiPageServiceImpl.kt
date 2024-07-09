@@ -55,7 +55,7 @@ class WikiPageServiceImpl(
     @Transactional
     override fun createWikiPage(request: CreateWikiPageRequest, image: MultipartFile?): CreateWikiPageResponse {
         val memberId = memberService.getMemberIdFromToken()
-        val member = memberRepository.findByIdOrNull(memberId) ?: throw ModelNotFoundException("Member", memberId!!)
+        val member = memberRepository.findByIdOrNull(memberId) ?: throw ModelNotFoundException("Member", memberId!!.toString())
         val wikiPage = wikiPageRepository.save(
             WikiPage.from(
                 request = request,
@@ -114,7 +114,7 @@ class WikiPageServiceImpl(
     @Cacheable("wikiPage", key = "#wikiId")
     @Transactional
     override fun getWikiPage(wikiId: Long, request: HttpServletRequest, response: HttpServletResponse): WikiPageResponse {
-        val wikiPage = wikiPageRepository.findByIdOrNull(wikiId) ?: throw ModelNotFoundException("WikiPage", wikiId)
+        val wikiPage = wikiPageRepository.findByIdOrNull(wikiId) ?: throw ModelNotFoundException("WikiPage", wikiId.toString())
 
         viewCountUp(wikiId, request, response)
 
@@ -151,8 +151,8 @@ class WikiPageServiceImpl(
     @Transactional
     override fun updateWikiPage(wikiId: Long, request: UpdateWikiPageRequest, image: MultipartFile?): WikiPageResponse {
         val memberId = memberService.getMemberIdFromToken()
-        val member = memberRepository.findByIdOrNull(memberId) ?: throw ModelNotFoundException("Member", memberId!!)
-        val wikiPage = wikiPageRepository.findByIdOrNull(wikiId) ?: throw ModelNotFoundException("WikiPage", wikiId)
+        val member = memberRepository.findByIdOrNull(memberId) ?: throw ModelNotFoundException("Member", memberId!!.toString())
+        val wikiPage = wikiPageRepository.findByIdOrNull(wikiId) ?: throw ModelNotFoundException("WikiPage", wikiId.toString())
 
         if (member.role == Role.USER && memberId != wikiPage.memberId) {
             throw CustomAccessDeniedException("수정 권한이 없습니다.")
@@ -214,7 +214,7 @@ class WikiPageServiceImpl(
 
     @Transactional
     override fun deleteWikiPage(wikiId: Long) {
-        val wikiPage = wikiPageRepository.findByIdOrNull(wikiId) ?: throw ModelNotFoundException("WikiPage", wikiId)
+        val wikiPage = wikiPageRepository.findByIdOrNull(wikiId) ?: throw ModelNotFoundException("WikiPage", wikiId.toString())
         val imageList = wikiHistoryCustomRepository.findImageById(wikiId) // S3에서 지울 이미지 key 가져오기
 
         // DELETE
@@ -232,7 +232,7 @@ class WikiPageServiceImpl(
     }
 
     fun getWikiById(id: Long): WikiPage {
-        return wikiPageRepository.findByIdOrNull(id) ?: throw ModelNotFoundException("Wiki", id)
+        return wikiPageRepository.findByIdOrNull(id) ?: throw ModelNotFoundException("Wiki", id.toString())
     }
 
     @Transactional

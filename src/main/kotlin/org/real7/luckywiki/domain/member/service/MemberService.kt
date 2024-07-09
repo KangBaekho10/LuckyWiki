@@ -69,7 +69,7 @@ class MemberService(
     @Transactional
     fun deleteMember() {
         val memberId = getMemberIdFromToken()
-        val member = memberRepository.findByIdOrNull(memberId) ?: throw ModelNotFoundException("Member", memberId!!)
+        val member = memberRepository.findByIdOrNull(memberId) ?: throw ModelNotFoundException("Member", memberId!!.toString())
 
         memberRepository.delete(member)
     }
@@ -85,6 +85,6 @@ class MemberService(
     }
 
     fun getMemberById(id: Long): Member {
-        return memberRepository.findByIdOrNull(id) ?: throw ModelNotFoundException("Member", id)
+        return memberRepository.findByIdOrNull(id) ?: throw ModelNotFoundException("Member", id.toString())
     }
 }
