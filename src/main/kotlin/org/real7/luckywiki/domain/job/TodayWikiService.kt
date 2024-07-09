@@ -19,25 +19,14 @@ class TodayWikiService(
     val lettuceRedis: LettuceRedis
 ) {
 
-    @CachePut(cacheNames = ["today_wiki"], key = "'key'")
-    fun real(): Long {
+//    @CachePut(cacheNames = ["today_wiki"], key = "'key'")
+    fun getTodayWiki(): WikiPageResponse {
         val max = wikiPageRepository.findMaxId() ?: throw IllegalArgumentException("Max ID not found")
         var id = Random.nextLong(max)
         while (!wikiPageRepository.existsById(id)) {
             id = Random.nextLong(max)
         }
-        return id
-    }
-
-    private fun getId(): Long? {
-        val cache = cacheManager.getCache("today_wiki")
-        val cachedValue = cache?.get("key")?.get()
-        return cachedValue as? Long
-    }
-
-
-    fun getTodayWiki() : WikiPageResponse {
-        return wikiPageRepository.findByIdOrNull(getId())!!.toResponse()
+        return wikiPageRepository.findByIdOrNull(id)!!.toResponse()
     }
 
     fun getTodayWikiRedis() : Map<String, String> {
