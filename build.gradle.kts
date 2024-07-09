@@ -101,6 +101,11 @@ dependencies {
     // Security Test
     testImplementation("org.springframework.security:spring-security-test")
 
+    // Apache
+    implementation("org.apache.tika:tika-core:2.9.1")
+    implementation("org.apache.tika:tika-parsers-standard-package:2.9.1")
+
+
 }
 
 tasks.withType<KotlinCompile> {
