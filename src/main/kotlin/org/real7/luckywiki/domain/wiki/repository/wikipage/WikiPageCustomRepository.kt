@@ -11,4 +11,7 @@ interface WikiPageCustomRepository {
     fun search(pageable: Pageable): Page<WikiPage>
     fun keywordSearch(searchType: SearchType, keyword: KeywordRequest, pageable: Pageable): Page<WikiPage>
     fun updateViews(wikiId: Long)
+    fun findByCountTop10(): List<WikiPage>
+    fun searchExceptTop10(pageable: Pageable, top10List: List<String>): Page<WikiPage>
+    fun keywordSearchExceptTop10(searchType: SearchType, keyword: KeywordRequest, pageable: Pageable, top10List: List<String>): Page<WikiPage>
 }

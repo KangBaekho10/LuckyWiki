@@ -12,11 +12,7 @@ import org.real7.luckywiki.domain.member.service.MemberService
 import org.real7.luckywiki.domain.wiki.dto.KeywordRequest
 import org.real7.luckywiki.domain.wiki.dto.wikihistory.CreateWikiHistoryRequest
 import org.real7.luckywiki.domain.wiki.dto.wikihistory.WikiHistoryResponse
-import org.real7.luckywiki.domain.wiki.dto.wikipage.CreateWikiPageRequest
-import org.real7.luckywiki.domain.wiki.dto.wikipage.CreateWikiPageResponse
-import org.real7.luckywiki.domain.wiki.dto.wikipage.UpdateWikiPageRequest
-import org.real7.luckywiki.domain.wiki.dto.wikipage.WikiPageResponse
-import org.real7.luckywiki.domain.wiki.model.PopularWord
+import org.real7.luckywiki.domain.wiki.dto.wikipage.*
 import org.real7.luckywiki.domain.wiki.model.WikiPage
 import org.real7.luckywiki.domain.wiki.model.createWikiPageResponse
 import org.real7.luckywiki.domain.wiki.model.toResponse
@@ -31,6 +27,8 @@ import org.real7.luckywiki.exception.ModelNotFoundException
 import org.real7.luckywiki.infra.aws.S3Service
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageImpl
+import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
@@ -131,6 +129,7 @@ class WikiPageServiceImplV2(
             WikiPageResponse.from(redisResult)
         }
     }
+
 
     override fun viewCountUp(wikiId: Long, request: HttpServletRequest, response: HttpServletResponse) {
         var oldCookie: Cookie? = null
@@ -244,18 +243,36 @@ class WikiPageServiceImplV2(
 
     @Transactional
     override fun getWikiPageList(searchType: SearchType, keyword: KeywordRequest?, pageable: Pageable): Page<WikiPageResponse> {
-        if (searchType == SearchType.NONE) {
-            return wikiPageRepository.search(pageable).map { it.toResponse() }
+
+        val result = lettuceRedis.findAllHashSet(MatchingKey.WIKI.name)
+
+        val titleList = result.map { it["title"]!! }
+
+
+        when(searchType){
+            SearchType.NONE -> {
+                if(pageable.pageNumber == 0) return convertToPage(result, pageable)
+
+                return wikiPageRepository.searchExceptTop10(pageable, titleList).map { it.toResponse() }
+            }
+            SearchType.TITLE -> {
+                if(pageable.pageNumber == 0) return convertToPage(result.filter { it["title"]?.contains(keyword?.keyword ?: "") == true }.toMutableList(), pageable)
+
+                return wikiPageRepository.keywordSearch(searchType, keyword!!, pageable).map { it.toResponse() }
+            }
+            SearchType.TAG -> {
+                if(pageable.pageNumber == 0) return convertToPage(result.filter { it["title"]?.contains(keyword?.keyword ?: "") == true }.toMutableList(), pageable)
+
+                return wikiPageRepository.keywordSearch(searchType, keyword!!, pageable).map { it.toResponse() }
+            }
+            else -> throw IllegalArgumentException()
         }
 
-        keyword?.let { popularWordRepository.save(PopularWord.from(it.keyword)) }
-
-        return wikiPageRepository.keywordSearch(searchType, keyword!!, pageable).map { it.toResponse() }
     }
 
-    @Cacheable("popularWordTop10")
-    fun getPopularWordTop10(): Map<String, String> {
-        return lettuceRedis.findHashSet(MatchingKey.TOP10)
+
+    fun getPopularWordTop10(): List<PopularWordTop10Response> {
+        return PopularWordTop10Response.from(lettuceRedis.findHashSet(MatchingKey.TOP10))
 //        return lettuceRedis.findAll("top10")
     }
 
@@ -289,6 +306,25 @@ class WikiPageServiceImplV2(
         )
 
         lettuceRedis.saveAllHashSet(args.title, resultMap, 3600)
+    }
+
+    fun convertToPage(list: MutableList<Map<String, String>>, pageable: Pageable): Page<WikiPageResponse> {
+        val responses = list.map { map ->
+            WikiPageResponse(
+                title = map["title"] ?: "",
+                content = map["key2"] ?: "",
+                image = map["image"] ?: "",
+                tag = map["tag"] ?: "",
+                reaction = map["reaction"]?.toLong() ?: 0L,
+                views = map["views"]?.toLong() ?: 0L,
+                createdAt = map["created_at"] ?: "",
+                updatedAt = map["updated_at"] ?: "",
+            )
+        }
+
+        val pageSetting = PageRequest.of(0, pageable.pageSize)
+
+        return PageImpl(responses, pageSetting, responses.size.toLong())
     }
 
 }
