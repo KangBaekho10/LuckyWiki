@@ -1,6 +1,7 @@
 package org.real7.luckywiki.config
 
 import io.lettuce.core.RedisClient
+import io.lettuce.core.ScanArgs
 import io.lettuce.core.api.StatefulRedisConnection
 import org.real7.luckywiki.common.MatchingKey
 import org.slf4j.LoggerFactory
@@ -87,6 +88,23 @@ class LettuceRedis(
 
     fun findHashSet(matchingKey: String): Map<String, String>{
         return commend.hgetall(matchingKey)
+    }
+
+
+    fun findAllHashSet(matchingKey: String): MutableList<Map<String, String>>{
+        val scanArgs = ScanArgs.Builder.matches("*$matchingKey*")
+        var scanCursor = commend.scan(scanArgs)
+
+        val resultList:MutableList<Map<String, String>> = mutableListOf()
+
+        while (!scanCursor.isFinished) {
+            scanCursor.keys.forEach { key ->
+                resultList.add(commend.hgetall(key))
+            }
+            scanCursor = commend.scan(scanCursor, scanArgs)
+        }
+
+        return resultList
     }
 
 }
