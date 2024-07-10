@@ -120,11 +120,11 @@ class WikiPageServiceImplV2(
     }
 
     @Transactional
-    fun getWikiPageRedis(searchType: SearchType, keyword: KeywordRequest): WikiPageResponse{
-        val redisResult = lettuceRedis.findHashSet(keyword.keyword)
+    fun getWikiPageRedis(wikiId: Long): WikiPageResponse{
+        val redisResult = lettuceRedis.findHashSet(wikiId.toString())
 
         return if(redisResult.isEmpty()) {
-            savedRedisAndToResponse(searchType, keyword)
+            savedRedisAndToResponse(wikiId)
         }else{
             WikiPageResponse.from(redisResult)
         }
@@ -244,26 +244,34 @@ class WikiPageServiceImplV2(
     @Transactional
     override fun getWikiPageList(searchType: SearchType, keyword: KeywordRequest?, pageable: Pageable): Page<WikiPageResponse> {
 
-        val result = lettuceRedis.findAllHashSet(MatchingKey.WIKI.name)
+        val result = lettuceRedis.findAllHashSet(MatchingKey.WIKI.name, searchType, keyword?.keyword ?: "")
 
         val titleList = result.map { it["title"]!! }
+        val tagList = result.map { it["tag"]!! }
 
+        fun filteringResult(search: String) = result.filter { it[search]?.contains(keyword?.keyword ?: "") == true }
 
         when(searchType){
             SearchType.NONE -> {
-                if(pageable.pageNumber == 0) return convertToPage(result, pageable)
+                val searchResult = wikiPageRepository.searchExceptTop10(pageable, keyword?.keyword ?: "", titleList).map { it.toResponse() }
 
-                return wikiPageRepository.searchExceptTop10(pageable, titleList).map { it.toResponse() }
+                if(result.isNotEmpty()) return convertToPage(filteringResult("title").toMutableList(), pageable, searchResult)
+
+                return searchResult
             }
             SearchType.TITLE -> {
-                if(pageable.pageNumber == 0) return convertToPage(result.filter { it["title"]?.contains(keyword?.keyword ?: "") == true }.toMutableList(), pageable)
+                val databaseResult = wikiPageRepository.keywordSearchExceptTop10(searchType, keyword?.keyword ?: "", pageable, tagList).map { it.toResponse() }
 
-                return wikiPageRepository.keywordSearch(searchType, keyword!!, pageable).map { it.toResponse() }
+                if(result.isNotEmpty()) return convertToPage(filteringResult("title").toMutableList(), pageable, databaseResult)
+
+                return databaseResult
             }
             SearchType.TAG -> {
-                if(pageable.pageNumber == 0) return convertToPage(result.filter { it["title"]?.contains(keyword?.keyword ?: "") == true }.toMutableList(), pageable)
+                val databaseResult = wikiPageRepository.keywordSearchExceptTop10(searchType, keyword?.keyword ?: "", pageable, tagList).map { it.toResponse() }
 
-                return wikiPageRepository.keywordSearch(searchType, keyword!!, pageable).map { it.toResponse() }
+                if(result.isNotEmpty()) return convertToPage(filteringResult("tag").toMutableList(), pageable, databaseResult)
+
+                return databaseResult
             }
             else -> throw IllegalArgumentException()
         }
@@ -276,17 +284,9 @@ class WikiPageServiceImplV2(
 //        return lettuceRedis.findAll("top10")
     }
 
-    private fun savedRedisAndToResponse(searchType: SearchType, keyword: KeywordRequest): WikiPageResponse {
+    private fun savedRedisAndToResponse(wikiId: Long): WikiPageResponse {
 
-        if (searchType == SearchType.NONE || searchType == SearchType.TITLE) {
-            val result = wikiPageRepository.findByTitle(keyword.keyword) ?: throw ModelNotFoundException("WikiPage", keyword.keyword)
-
-            savedRedis(result)
-
-            return result.toResponse()
-        }
-
-        val result = wikiPageRepository.findByTag(keyword.keyword) ?: throw ModelNotFoundException("WikiPage", keyword.keyword)
+        val result = wikiPageRepository.findByIdOrNull(wikiId) ?: throw ModelNotFoundException("WikiPage", wikiId.toString())
 
         savedRedis(result)
 
@@ -308,7 +308,7 @@ class WikiPageServiceImplV2(
         lettuceRedis.saveAllHashSet(args.title, resultMap, 3600)
     }
 
-    fun convertToPage(list: MutableList<Map<String, String>>, pageable: Pageable): Page<WikiPageResponse> {
+    fun convertToPage(list: MutableList<Map<String, String>>, pageable: Pageable, searchDataBase: Page<WikiPageResponse>): Page<WikiPageResponse> {
         val responses = list.map { map ->
             WikiPageResponse(
                 title = map["title"] ?: "",
@@ -322,9 +322,17 @@ class WikiPageServiceImplV2(
             )
         }
 
-        val pageSetting = PageRequest.of(0, pageable.pageSize)
+        val result = responses + searchDataBase.content
+        val size = result.size
+        val pageSetting = PageRequest.of(pageable.pageNumber, pageable.pageSize)
 
-        return PageImpl(responses, pageSetting, responses.size.toLong())
+        val start = (pageable.pageNumber * pageable.pageSize).coerceAtMost(size)
+        val end = (start + pageable.pageSize).coerceAtMost(size)
+
+        val currentPageContent = result.subList(start, end)
+
+        return PageImpl(currentPageContent, pageSetting, size.toLong())
     }
+
 
 }
