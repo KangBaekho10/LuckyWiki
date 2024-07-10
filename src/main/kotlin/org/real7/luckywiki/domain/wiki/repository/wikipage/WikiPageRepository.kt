@@ -8,6 +8,8 @@ interface WikiPageRepository : JpaRepository<WikiPage, Long>, WikiPageCustomRepo
 
     @Query("SELECT MAX(w.id) FROM WikiPage w")
     fun findMaxId(): Long?
+    @Query("SELECT MIN(w.id) FROM WikiPage w")
+    fun findMinId(): Long?
 
     fun findByTitle(keyword: String): WikiPage?
 

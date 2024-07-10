@@ -21,10 +21,11 @@ class TodayWikiService(
 
 //    @CachePut(cacheNames = ["today_wiki"], key = "'key'")
     fun getTodayWiki(): WikiPageResponse {
+        val min = wikiPageRepository.findMinId() ?: throw IllegalArgumentException("notfound")
         val max = wikiPageRepository.findMaxId() ?: throw IllegalArgumentException("Max ID not found")
-        var id = Random.nextLong(max)
+        var id = Random.nextLong(min,max)
         while (!wikiPageRepository.existsById(id)) {
-            id = Random.nextLong(max)
+            id = Random.nextLong(min,max)
         }
         return wikiPageRepository.findByIdOrNull(id)!!.toResponse()
     }
