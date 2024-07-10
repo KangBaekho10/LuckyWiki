@@ -6,7 +6,7 @@
 - [요구 사항](#-요구-사항)
 - [Why?](#-why)
 - [기획 및 설계](#-기획-및-설계)
-- [시연 영상](https://youtu.be/PHEdWVeoeRw)
+- [시연 영상](https://youtu.be/F0agjZwy27I)
 - [협업 노션](https://assorted-buffalo-e03.notion.site/7-502e001708f9404ca794f1f9e5a2aadf?pvs=4)
 
 ## ![free-icon-needs-10695007](https://github.com/KangBaekho10/LuckyWiki/assets/166815465/d5130b74-311c-4c99-b90c-f8e7a9d173fc) 요구 사항
