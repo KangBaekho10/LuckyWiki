@@ -12,6 +12,7 @@ import org.real7.luckywiki.domain.wiki.model.QWikiPage
 import org.real7.luckywiki.domain.wiki.model.WikiPage
 import org.real7.luckywiki.domain.wiki.model.type.SearchType
 import org.real7.luckywiki.infra.aws.querydsl.QueryDslSortUtil
+import org.real7.luckywiki.infra.aws.querydsl.QueryDslSortUtil.Companion.getOrderSpecifier
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
@@ -38,12 +39,13 @@ class WikiPageCustomRepositoryImpl(
         return PageImpl(contents, pageable, totalCount)
     }
 
-    override fun searchExceptTop10(pageable: Pageable, top10List: List<String>): Page<WikiPage> {
+    override fun searchExceptTop10(pageable: Pageable, keyword: String, top10List: List<String>): Page<WikiPage> {
 
         val query = queryFactory.selectFrom(wikiPage)
 
         query.where(
-                filteringTop10(top10List)
+                filteringTop10(top10List),
+                wikiPage.title.contains(keyword)
             )
 
         if (pageable.sort.isSorted) {
@@ -73,7 +75,7 @@ class WikiPageCustomRepositoryImpl(
 
         val contents = queryFactory.selectFrom(wikiPage)
             .where(where)
-            .orderBy(*QueryDslSortUtil.getOrderSpecifier(wikiPage, pageable.sort))
+            .orderBy(*getOrderSpecifier(wikiPage, pageable.sort))
             .offset(pageable.offset)
             .limit(pageable.pageSize.toLong())
             .fetch()
@@ -81,10 +83,10 @@ class WikiPageCustomRepositoryImpl(
         return PageImpl(contents, pageable, totalCount)
     }
 
-    override fun keywordSearchExceptTop10(searchType: SearchType, keyword: KeywordRequest, pageable: Pageable, top10List: List<String>): Page<WikiPage> {
+    override fun keywordSearchExceptTop10(searchType: SearchType, keyword: String, pageable: Pageable, top10List: List<String>): Page<WikiPage> {
         val where = when (searchType) {
-            SearchType.TITLE -> wikiPage.title.contains(keyword.keyword)
-            SearchType.TAG -> wikiPage.tag.contains(keyword.keyword)
+            SearchType.TITLE -> wikiPage.title.contains(keyword)
+            SearchType.TAG -> wikiPage.tag.contains(keyword)
             else -> throw IllegalArgumentException()
         }
 
@@ -93,7 +95,7 @@ class WikiPageCustomRepositoryImpl(
             query.where(where).where(filteringTop10(top10List))
 
         if (pageable.sort.isSorted) {
-            query.orderBy(*QueryDslSortUtil.getOrderSpecifier(wikiPage, pageable.sort))
+           query.orderBy(*getOrderSpecifier(wikiPage, pageable.sort))
 
         }
 

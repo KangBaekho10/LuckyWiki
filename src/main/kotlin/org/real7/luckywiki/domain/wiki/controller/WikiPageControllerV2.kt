@@ -25,13 +25,13 @@ class WikiPageControllerV2(
         return ResponseEntity.ok(wikiPageService.getPopularWordTop10())
     }
 
-    @GetMapping("/search")
-    fun getWikiPage(
-        @RequestParam searchType: SearchType, // searchType: title, tag
-        @RequestParam @Valid keyword: KeywordRequest?,
-    ): ResponseEntity<WikiPageResponse> {
-        return ResponseEntity.ok(wikiPageService.getWikiPageRedis(searchType, keyword ?: KeywordRequest("")))
-    }
+//    @GetMapping("/search")
+//    fun getWikiPage(
+//        @RequestParam searchType: SearchType, // searchType: title, tag
+//        @RequestParam @Valid keyword: KeywordRequest?,
+//    ): ResponseEntity<List<WikiPageResponse>> {
+//        return ResponseEntity.ok(wikiPageService.getWikiPageRedis(searchType, keyword ?: KeywordRequest("")))
+//    }
 
     @GetMapping()
     fun getWikiPageList(
