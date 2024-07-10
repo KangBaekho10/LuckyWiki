@@ -119,16 +119,16 @@ class WikiPageServiceImplV2(
         return wikiPage.toResponse()
     }
 
-//    @Transactional
-//    fun getWikiPageRedis(searchType: SearchType, keyword: KeywordRequest): List<WikiPageResponse>{
-//        val redisResult = lettuceRedis.findHashSet(keyword.keyword)
-//
-//        return if(redisResult.isEmpty()) {
-//            savedRedisAndToResponse(searchType, keyword)
-//        }else{
-//            WikiPageResponse.from(redisResult)
-//        }
-//    }
+    @Transactional
+    fun getWikiPageRedis(wikiId: Long): WikiPageResponse{
+        val redisResult = lettuceRedis.findHashSet(wikiId.toString())
+
+        return if(redisResult.isEmpty()) {
+            savedRedisAndToResponse(wikiId)
+        }else{
+            WikiPageResponse.from(redisResult)
+        }
+    }
 
 
     override fun viewCountUp(wikiId: Long, request: HttpServletRequest, response: HttpServletResponse) {
@@ -284,22 +284,13 @@ class WikiPageServiceImplV2(
 //        return lettuceRedis.findAll("top10")
     }
 
-    private fun savedRedisAndToResponse(searchType: SearchType, keyword: KeywordRequest): List<WikiPageResponse> {
+    private fun savedRedisAndToResponse(wikiId: Long): WikiPageResponse {
 
-        if (searchType == SearchType.NONE || searchType == SearchType.TITLE) {
-            val result = wikiPageRepository.findByTitle(keyword.keyword) ?: throw ModelNotFoundException("WikiPage", keyword.keyword)
+        val result = wikiPageRepository.findByIdOrNull(wikiId) ?: throw ModelNotFoundException("WikiPage", wikiId.toString())
 
-            for(i in result.indices) savedRedis(result[i])
+        savedRedis(result)
 
-
-            return result.map{ it.toResponse() }
-        }
-
-        val result = wikiPageRepository.findByTag(keyword.keyword) ?: throw ModelNotFoundException("WikiPage", keyword.keyword)
-
-        for(i in result.indices) savedRedis(result[i])
-
-        return result.map{ it.toResponse() }
+        return result.toResponse()
     }
 
     private fun savedRedis(args: WikiPage){
