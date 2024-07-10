@@ -9,12 +9,9 @@ class FileUtils (
     val tika : Tika
 ) {
     fun fileTrust(file: MultipartFile) {
-        val fileName = file.originalFilename ?: ""
-        val fileExtension = fileName.substringAfterLast('.', "")
+        val detectedMimeType = file.inputStream.use{tika.detect(it)}
 
-        val detectedMimeType = tika.detect(file.inputStream)
-
-        if ((detectedMimeType.substringAfterLast("/")) != fileExtension) {
+        if (detectedMimeType != file.contentType){
             throw IllegalArgumentException("파일과 확장자명이 일치하지 않습니다.")
         }
 
