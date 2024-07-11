@@ -6,7 +6,7 @@
 - [요구 사항](#-요구-사항)
 - [Why?](#-why)
 - [기획 및 설계](#-기획-및-설계)
-- [시연 영상](https://youtu.be/F0agjZwy27I)
+- [시연 영상](#-시연-영상)
 - [협업 노션](https://assorted-buffalo-e03.notion.site/7-502e001708f9404ca794f1f9e5a2aadf?pvs=4)
 
 ## ![free-icon-needs-10695007](https://github.com/KangBaekho10/LuckyWiki/assets/166815465/d5130b74-311c-4c99-b90c-f8e7a9d173fc) 요구 사항
@@ -165,7 +165,7 @@ ALTER TABLE wiki_history ADD CONSTRAINT fk_wiki_history_wiki_id
 
 ## ![dudtkd](https://github.com/KangBaekho10/LuckyWiki/assets/166815465/41b0d7fd-2086-4ca7-8592-6f41ee5ca4e4) 시연 영상
 
-추가 예정
+[시연 연상](https://youtu.be/F0agjZwy27I)
 
 ## ![ghksrudtjfwjd](https://github.com/KangBaekho10/LuckyWiki/assets/166815465/debe07f2-1467-4f66-b968-73dd3a2ea14c) 환경 설정<br>
 ![Kotlin](https://img.shields.io/badge/kotlin-%237F52FF.svg?style=for-the-badge&logo=kotlin&logoColor=white)
